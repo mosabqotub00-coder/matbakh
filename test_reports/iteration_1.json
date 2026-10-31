@@ -1,0 +1,35 @@
+{
+  "summary": "Tested Matbakh end-to-end via the public URL. Backend: 12/12 pytest pass for the nativePush tRPC router: register (incl. ExponentPushToken[abc123]) returns registered:true; unauth returns 401 UNAUTHORIZED; invalid installationId/token/platform returns 400; status works; unregister works without auth; test with a fake token returns success:false and the device row is removed (DeviceNotRegistered); acknowledge works. Frontend: login page loads; wrong password shows the Arabic error toast and does not navigate; qa_admin login enters the app with no page reload (window marker kept); /manager shows all 5 branches; the branch-managers tab lists the staff accounts; station, kitchen, communications and notifications pages load for qa_admin with branch فيصل selected and no console errors; logout returns to the login form. The forced password-change screen works and also blocks /kitchen, but it was checked with station_faisal_morning because the manager credential no longer works (see below).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "emitNotification -> deliverNativePush", "issue": "deliverNativePush is awaited inside emitNotification, which is itself awaited in the kitchen/communications mutations. A slow or unreachable Expo API can delay order transitions by up to 15s (AbortSignal timeout). Consider fire-and-forget (void ...catch) for the native and web push delivery."},
+      {"endpoint": "nativePush dead-token cleanup", "issue": "Only ticket-level DeviceNotRegistered is handled. Expo push receipts (getReceipts), where most DeviceNotRegistered errors show up for real tokens, are never checked, so stale devices can build up. Enhancement only."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/manager branch-managers cards and 'إدارة الفروع' list", "issues": ["Account and branch name titles inside the dark cards have very low contrast (nearly invisible dark-on-dark). Probably original design; the user asked not to change the design, so reporting only."]}
+    ]
+  },
+  "test_credentials": "qa_admin / QaTest-36fb49a9 works. manager / Mtb-d68aaf-5a7c04 NO LONGER WORKS: in the DB, staff_users id=1 has must_change_password=0 and updated_at 2026-10-31 17:14:40, with a manager session created at 17:14:24, so someone (likely the owner) logged in and changed the password. The CSV in /app/memory is stale for manager. station_faisal_morning / Mtb-86f815-195bed still has the forced change and was used to check that flow (password NOT changed).",
+  "test_report_links": ["/app/backend/tests/test_native_push.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Update /app/memory/test_credentials.md: the manager temp password was already changed at 17:14 UTC (must_change_password=0). Do not assume it still works.",
+    "Optional: make deliverNativePush non-blocking in emitNotification so the Expo API's latency does not slow order mutations.",
+    "Optional: add an Expo receipts check to prune DeviceNotRegistered tokens."
+  ],
+  "critical_code_review_comments": [
+    "native-push.ts: the logic is sound. Devices are bound to the session hash, liveDevices joins only valid sessions, and register refuses users with mustChangePassword.",
+    "unregister is public by design (the installationId is the capability). Acceptable since the ID has 160 bits of entropy.",
+    "emitNotification awaits both web push and native push in series, which adds latency to the request path."
+  ],
+  "updated_files": ["/app/backend/tests/test_native_push.py (added the abc123-token and invalid-unregister tests)"],
+  "success_rate": {"backend": "100%", "frontend": "100% (forced change checked with an alternate account)"},
+  "seed_data_creation": "No new orders created. Test nativePush device rows were created and removed. The existing TEST_ order/item in فرع فيصل was from a previous agent. Logins created sessions for qa_admin and station_faisal_morning.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "The app has no data-testid attributes. Login selectors: input[autocomplete='username'], input[type='password'], button 'دخول'. Nav texts: الإدارة العامة, محطة السخان (/), شاشة المطبخ (/kitchen), التواصل (/communications), مركز التنبيهات (/notifications), تسجيل الخروج. Select a branch via the 'إدارة هذا الفرع' buttons on /manager. DB creds are in /app/matbakh/.env DATABASE_URL (MariaDB)."
+}

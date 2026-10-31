@@ -104,3 +104,20 @@ def test_acknowledge(auth):
     r = trpc_post(auth, "nativePush.acknowledge", {"installationId": new_iid(), "deliveryId": "1", "state": "received"})
     assert r.status_code == 200
     assert r.json()[0]["result"]["data"]["json"]["success"] is False
+
+
+# Exact token from review request
+def test_register_abc123_token(auth):
+    iid = new_iid()
+    r = trpc_post(auth, "nativePush.register", {"installationId": iid, "expoPushToken": "ExponentPushToken[abc123]", "platform": "android"})
+    assert r.status_code == 200, r.text
+    assert r.json()[0]["result"]["data"]["json"]["registered"] is True
+    r = trpc_get(auth, "nativePush.status", {"installationId": iid})
+    assert r.json()["result"]["data"]["json"]["registered"] is True
+    r = trpc_post(requests.Session(), "nativePush.unregister", {"installationId": iid})
+    assert r.status_code == 200
+
+
+def test_unregister_invalid_id():
+    r = trpc_post(requests.Session(), "nativePush.unregister", {"installationId": "mbx_XYZ"})
+    assert r.status_code == 400

@@ -445,12 +445,10 @@ export async function emitNotification(
       } catch {
         console.warn("[Push] Notification delivery skipped");
       }
-      try {
-        const users = await activeUsersForNotification(result.notification);
-        await deliverNativePush(result.notification, users.map(user => user.id));
-      } catch {
-        console.warn("[NativePush] Notification delivery skipped");
-      }
+      const nativeNotification = result.notification;
+      void activeUsersForNotification(nativeNotification)
+        .then(users => deliverNativePush(nativeNotification, users.map(user => user.id)))
+        .catch(() => console.warn("[NativePush] Notification delivery skipped"));
     }
   } catch (error) {
     console.warn(
