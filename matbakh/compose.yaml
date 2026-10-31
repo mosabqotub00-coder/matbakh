@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-matbakh}
+      MYSQL_USER: ${MYSQL_USER:-matbakh}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DEPLOYMENT_MODE: standalone
+      DATABASE_URL: mysql://${MYSQL_USER:-matbakh}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-matbakh}
+      MAINTENANCE_TOKEN: ${MAINTENANCE_TOKEN:?Set MAINTENANCE_TOKEN in .env}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./private-credentials:/run/matbakh-private
+  deadline-check:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DEPLOYMENT_MODE: standalone
+      DATABASE_URL: mysql://${MYSQL_USER:-matbakh}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-matbakh}
+      MAINTENANCE_TOKEN: ${MAINTENANCE_TOKEN:?Set MAINTENANCE_TOKEN in .env}
+      DEADLINE_CHECK_URL: http://app:3000/api/maintenance/deadlines
+    command: ["sh", "-c", "while true; do node scripts/check-deadlines.mjs || true; sleep 60; done"]
+volumes:
+  mysql_data:

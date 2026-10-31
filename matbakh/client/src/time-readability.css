@@ -1,0 +1,174 @@
+/* Readable timestamps across the operational screens. Values and clocks are unchanged. */
+.app-shell .history-date,
+.app-shell .v2-history-timeline,
+.app-shell .completion-stamp strong,
+.app-shell .completion-details,
+.app-shell .manager-live-meta,
+.app-shell .ticket-meta,
+.app-shell .v2-timing-row,
+.app-shell .archive-event-head time,
+.app-shell .archive-event-dates,
+.app-shell .order-broadcast-archive small,
+.app-shell .broadcast-card small,
+.app-shell .broadcast-card time,
+.app-shell .notification-card-top time,
+.app-shell .station-order-foot > span {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.7;
+  color: #d4e5da;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.app-shell.v2-light .history-date,
+.app-shell.v2-light .v2-history-timeline,
+.app-shell.v2-light .completion-stamp strong,
+.app-shell.v2-light .completion-details,
+.app-shell.v2-light .manager-live-meta,
+.app-shell.v2-light .ticket-meta,
+.app-shell.v2-light .v2-timing-row,
+.app-shell.v2-light .archive-event-head time,
+.app-shell.v2-light .archive-event-dates,
+.app-shell.v2-light .order-broadcast-archive small,
+.app-shell.v2-light .broadcast-card small,
+.app-shell.v2-light .broadcast-card time,
+.app-shell.v2-light .notification-card-top time,
+.app-shell.v2-light .station-order-foot > span {
+  color: #315447;
+}
+.app-shell .history-date {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+.app-shell .history-card-top,
+.app-shell .history-card-top > div,
+.app-shell .station-order-foot,
+.app-shell .manager-live-meta,
+.app-shell .ticket-meta,
+.app-shell .v2-timing-row {
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.app-shell .completion-stamp strong {
+  font-size: 21px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+.app-shell .completion-stamp > span {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.app-shell .v2-completion b,
+.app-shell .v2-completion strong {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-size: 20px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.app-shell .v2-history-timeline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  padding: 13px 0;
+}
+.app-shell .v2-history-timeline > span {
+  padding: 10px 12px;
+  border: 1px solid #78908040;
+  border-radius: 8px;
+}
+.app-shell .duration-strip {
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding-top: 12px;
+}
+.app-shell .duration-strip > div {
+  flex-wrap: wrap;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #b5cbbb;
+}
+.app-shell.v2-light .duration-strip > div {
+  color: #486356;
+}
+.app-shell .duration-strip strong,
+.app-shell .completion-details b {
+  font-size: 17px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.app-shell.v2-light .duration-strip strong {
+  color: #183029;
+}
+.app-shell .timer-chip {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-size: 22px;
+  line-height: 1.4;
+  padding: 9px 11px;
+}
+.app-shell .timer-chip small {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.app-shell .manager-live-timer b,
+.app-shell .ticket-age strong,
+.app-shell .ticket-age b {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.app-shell .v2-timing-row strong,
+.app-shell .manager-live-meta strong,
+.app-shell .ticket-meta strong {
+  min-width: 0;
+  max-width: 100%;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.app-shell .notification-card-top time {
+  flex-shrink: 1;
+}
+.app-shell .history-date,
+.app-shell .v2-history-timeline > span,
+.app-shell .completion-details,
+.app-shell .ticket-meta,
+.app-shell .manager-live-meta {
+  text-wrap: balance;
+}
+.app-shell .topbar-time {
+  font-size: 14px;
+  line-height: 1.7;
+}
+@media (max-width: 640px) {
+  .app-shell .v2-history-timeline {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell .ticket-meta,
+  .app-shell .manager-live-meta,
+  .app-shell .v2-timing-row {
+    align-items: flex-start;
+  }
+  .app-shell .v2-timing-row strong {
+    flex: 1 1 170px;
+    text-align: end;
+  }
+  .app-shell .completion-stamp strong,
+  .app-shell .v2-completion b,
+  .app-shell .v2-completion strong {
+    font-size: 19px;
+  }
+  .app-shell .history-date,
+  .app-shell .v2-history-timeline,
+  .app-shell .v2-timing-row strong,
+  .app-shell .manager-live-meta strong,
+  .app-shell .ticket-meta strong {
+    font-size: 16px;
+  }
+  .app-shell .history-card-top > div:first-child {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

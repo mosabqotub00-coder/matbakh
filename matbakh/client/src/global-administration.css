@@ -1,0 +1,375 @@
+.global-administration {
+  --global-admin-ink: #183029;
+  --global-admin-muted: #62756d;
+  --global-admin-line: #d8e4dd;
+  --global-admin-paper: #f6faf7;
+  --global-admin-panel: #ffffff;
+  --global-admin-green: #15945f;
+  --global-admin-green-dark: #087547;
+  --global-admin-green-soft: #e7f6ed;
+  min-height: 100%;
+  padding: 4px 0 28px;
+  color: var(--global-admin-ink);
+  background: var(--global-admin-paper);
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+
+.global-administration__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 25px;
+}
+
+.global-administration__heading {
+  max-width: 760px;
+}
+
+.global-administration__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: var(--global-admin-green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.global-administration__heading h1,
+.global-administration__section-heading h2,
+.global-administration__subheading h2 {
+  margin: 0;
+  color: var(--global-admin-ink);
+}
+
+.global-administration__heading h1 {
+  font-size: clamp(25px, 3vw, 32px);
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.global-administration__heading p,
+.global-administration__section-heading p,
+.global-administration__subheading p {
+  margin: 7px 0 0;
+  color: var(--global-admin-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.global-administration__notifications {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 47px;
+  padding: 0 17px;
+  border: 1px solid #b8dbc6;
+  border-radius: 11px;
+  color: var(--global-admin-green-dark);
+  background: #f2fbf5;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: 160ms ease;
+}
+
+.global-administration__notifications:hover {
+  border-color: var(--global-admin-green);
+  background: var(--global-admin-green-soft);
+  transform: translateY(-1px);
+}
+
+.global-administration__tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--global-admin-line);
+  scrollbar-width: none;
+}
+
+.global-administration__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.global-administration__tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 51px;
+  padding: 0 17px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: #6a7d74;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.global-administration__tabs button:hover {
+  color: var(--global-admin-green-dark);
+  background: #eef8f1;
+}
+
+.global-administration__tabs button.is-active {
+  border-bottom-color: var(--global-admin-green);
+  color: var(--global-admin-green-dark);
+  background: var(--global-admin-green-soft);
+}
+
+.global-administration__content {
+  min-width: 0;
+}
+
+.global-administration__branches-view,
+.global-administration__panel {
+  padding: 21px;
+  border: 1px solid var(--global-admin-line);
+  border-radius: 15px;
+  background: var(--global-admin-panel);
+  box-shadow: 0 8px 28px #12382a0b;
+}
+
+.global-administration__section-heading,
+.global-administration__subheading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.global-administration__section-heading {
+  margin-bottom: 17px;
+}
+
+.global-administration__section-heading h2,
+.global-administration__subheading h2 {
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.global-administration__scope-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #c8e3d1;
+  border-radius: 999px;
+  color: var(--global-admin-green-dark);
+  background: #f0faf3;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.global-administration__branch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 13px;
+}
+
+.global-administration__branch-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--global-admin-line);
+  border-radius: 13px;
+  background: #fbfefc;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.global-administration__branch-card:hover,
+.global-administration__branch-card.is-selected {
+  border-color: #9ed0ae;
+  box-shadow: 0 8px 22px #1a71410e;
+}
+
+.global-administration__branch-card.is-selected {
+  background: #f3fbf5;
+}
+
+.global-administration__branch-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.global-administration__branch-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  color: var(--global-admin-green-dark);
+  background: var(--global-admin-green-soft);
+}
+
+.global-administration__receiving-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.global-administration__receiving-status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.global-administration__receiving-status.is-receiving {
+  color: #087547;
+  background: #e2f7ea;
+}
+
+.global-administration__receiving-status.is-stopped {
+  color: #9a6508;
+  background: #fff4db;
+}
+
+.global-administration__branch-card h3 {
+  margin: 15px 0 0;
+  color: var(--global-admin-ink);
+  font-size: 16px;
+}
+
+.global-administration__branch-card p {
+  min-height: 22px;
+  margin: 3px 0 14px;
+  color: var(--global-admin-muted);
+  font-size: 11px;
+}
+
+.global-administration__select-branch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid #b5d9c1;
+  border-radius: 10px;
+  color: var(--global-admin-green-dark);
+  background: #ffffff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.global-administration__select-branch:hover {
+  border-color: var(--global-admin-green);
+  background: var(--global-admin-green-soft);
+}
+
+.global-administration__branch-card.is-selected .global-administration__select-branch {
+  border-color: var(--global-admin-green);
+  color: #ffffff;
+  background: var(--global-admin-green);
+}
+
+.global-administration__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 154px;
+  border: 1px dashed #c7ddd0;
+  border-radius: 12px;
+  color: var(--global-admin-muted);
+  background: #fbfefc;
+  font-size: 13px;
+}
+
+.global-administration__state--empty {
+  flex-direction: column;
+  gap: 6px;
+  color: var(--global-admin-green-dark);
+}
+
+.global-administration__state--empty span {
+  color: var(--global-admin-muted);
+  font-size: 12px;
+}
+
+.global-administration__spin {
+  animation: global-administration-spin 900ms linear infinite;
+}
+
+@keyframes global-administration-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.global-administration__branch-management {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--global-admin-line);
+}
+
+.global-administration__subheading {
+  margin-bottom: 15px;
+}
+
+.global-administration__branch-management > .manager-section {
+  margin: 0;
+}
+
+.global-administration__panel > .global-administration__section-heading > svg {
+  flex: 0 0 auto;
+  color: var(--global-admin-green-dark);
+}
+
+.global-administration__panel .staff-section {
+  margin-top: 5px;
+}
+
+@media (max-width: 760px) {
+  .global-administration__header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .global-administration__notifications {
+    width: 100%;
+  }
+
+  .global-administration__branches-view,
+  .global-administration__panel {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .global-administration__section-heading,
+  .global-administration__subheading {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .global-administration__scope-badge {
+    align-self: flex-start;
+  }
+
+  .global-administration__tabs button {
+    min-height: 46px;
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,154 @@
+/* Account controls must stay visible for every role, including kitchen and station. */
+.app-shell .main-area {
+  min-width: 0;
+}
+.app-shell .topbar {
+  display: flex;
+  min-height: 66px;
+  height: auto;
+  gap: 12px;
+  padding-block: 10px;
+  flex-wrap: wrap;
+}
+.app-shell .topbar-controls {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.app-shell .v2-branch-bar {
+  min-width: 0;
+}
+.app-shell .v2-branch-select {
+  min-width: 0;
+  max-width: 310px;
+}
+.topbar-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+}
+.topbar-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.topbar-account-label,
+.topbar-username {
+  color: #91a69a;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.topbar-username {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-shell .topbar-user {
+  max-width: 200px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app-shell .logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.app-shell .logout-button:focus-visible {
+  outline: 2px solid #e3aa9d;
+  outline-offset: 3px;
+}
+.app-shell.v2-light .topbar {
+  background: #f8fcf9f5;
+  border-color: #d8e4dd;
+}
+.app-shell.v2-light .topbar-mark,
+.app-shell.v2-light .topbar-user {
+  color: #183029;
+}
+.app-shell.v2-light .topbar-account-label,
+.app-shell.v2-light .topbar-username {
+  color: #62756d;
+}
+.app-shell.v2-light .logout-button {
+  background: #fff3f0;
+  border-color: #ecc4b9;
+  color: #963b2d;
+}
+@media (max-width: 900px) {
+  .app-shell .sidebar {
+    position: relative;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
+  }
+  .app-shell .side-nav {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    margin-inline-start: 0;
+  }
+  .app-shell .nav-link {
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-height: 44px;
+  }
+  .app-shell .topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 14px;
+    gap: 10px;
+    top: 0;
+  }
+  .app-shell .topbar-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 10px;
+    width: 100%;
+  }
+  .app-shell .v2-branch-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .app-shell .v2-branch-select {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .app-shell .topbar-controls .sound-toggle {
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .app-shell .topbar-account {
+    grid-column: 1 / -1;
+    width: 100%;
+    border-top: 1px solid #73948240;
+    padding-top: 10px;
+  }
+  .app-shell .topbar-identity {
+    flex: 1;
+  }
+  .app-shell .topbar-user,
+  .app-shell .topbar-username {
+    max-width: 100%;
+    width: 100%;
+  }
+}

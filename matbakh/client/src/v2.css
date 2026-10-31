@@ -1,0 +1,463 @@
+/* Matbakh v2: preserve the existing brand while making work areas intentionally distinct. */
+:root {
+  --v2-green: #15945f;
+  --v2-ink: #183029;
+  --v2-muted: #62756d;
+  --v2-line: #d8e4dd;
+  --v2-paper: #f6faf7;
+}
+body.v2-light {
+  background: var(--v2-paper);
+  color: var(--v2-ink);
+}
+body.v2-light .app-shell {
+  background: var(--v2-paper);
+}
+body.v2-light .sidebar,
+body.v2-light .topbar {
+  background: #fff;
+  color: var(--v2-ink);
+  border-color: var(--v2-line);
+}
+body.v2-light .sidebar .brand strong,
+body.v2-light .nav-link,
+body.v2-light .topbar-user {
+  color: var(--v2-ink);
+}
+body.v2-light .nav-link {
+  border-color: transparent;
+}
+body.v2-light .nav-link.active {
+  background: #e7f6ed;
+  color: #087547;
+}
+body.v2-light .page-heading h1,
+body.v2-light .manager-section h2,
+body.v2-light .panel h2 {
+  color: var(--v2-ink);
+}
+body.v2-light .panel,
+body.v2-light .manager-section,
+body.v2-light .station-order,
+body.v2-light .manager-live-order,
+body.v2-light .history-card,
+body.v2-light .staff-account-card,
+body.v2-light .staff-form-card {
+  background: #fff;
+  border-color: var(--v2-line);
+  box-shadow: 0 8px 28px #12382a0b;
+}
+body.v2-light input,
+body.v2-light textarea,
+body.v2-light select {
+  background: #fbfefc;
+  color: var(--v2-ink);
+  border-color: #cbdcd2;
+}
+body.v2-light .station-status-column,
+body.v2-light .manager-live-column {
+  background: #eef7f1;
+  border-color: var(--v2-line);
+}
+body.v2-light .station-order-items span,
+body.v2-light .manager-live-items span {
+  background: #eef7f1;
+  color: #315447;
+}
+body.v2-light .status-pill.new,
+body.v2-light .status-pill.waiting {
+  background: #fff4db;
+  color: #9a6508;
+}
+body.v2-light .status-pill.preparing {
+  background: #eaf2ff;
+  color: #2d68aa;
+}
+body.v2-light .status-pill.ready,
+body.v2-light .status-pill.received {
+  background: #e2f7ea;
+  color: #087547;
+}
+body.v2-light .timer-chip,
+body.v2-light .manager-live-timer {
+  color: #315447;
+}
+body.v2-light .kitchen-stats > div {
+  background: #fff;
+  border-color: var(--v2-line);
+}
+body.v2-light .sound-toggle {
+  background: #edf8f1;
+  border-color: #bcdcc9;
+  color: #087547;
+}
+.v2-branch-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.v2-branch-bar label {
+  color: #789087;
+  font-size: 10px;
+}
+.v2-branch-select {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #345044;
+  border-radius: 8px;
+  background: #17231e;
+  color: #d7e9de;
+  font: inherit;
+}
+body.v2-light .v2-branch-select {
+  background: #f8fcf9;
+  color: var(--v2-ink);
+  border-color: #c8ddd0;
+}
+.v2-role-badge,
+.v2-source-badge,
+.v2-history-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.v2-role-badge {
+  background: #e6f5ec;
+  color: #117748;
+}
+body:not(.v2-light) .v2-role-badge {
+  background: #193a2a;
+  color: #8fe2b0;
+}
+.v2-source-badge {
+  background: #fff0cc;
+  color: #8b5c05;
+}
+body:not(.v2-light) .v2-source-badge {
+  background: #3c301b;
+  color: #f1ca79;
+}
+.v2-history-badge.ready {
+  background: #e6f6eb;
+  color: #137348;
+}
+.v2-history-badge.received {
+  background: #dceff1;
+  color: #14616b;
+}
+.v2-timing {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #1020190b;
+  font-size: 9px;
+}
+.v2-timing-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.v2-timing-row strong {
+  font-family: "IBM Plex Mono", monospace;
+  direction: ltr;
+}
+.v2-timing-row.late,
+.v2-ever-overdue {
+  color: #c7483f;
+}
+.v2-timing-row.grace {
+  color: #a36a08;
+}
+.v2-history-timeline {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #d8e4dd;
+  font-size: 9px;
+}
+.v2-extension-history {
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 7px;
+  background: #fff8e7;
+  color: #76551c;
+  font-size: 9px;
+}
+.v2-extension-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+}
+.v2-archive-link {
+  color: #0b7950;
+  font-size: 10px;
+  text-decoration: underline;
+}
+.v2-touch-button,
+.ticket-action,
+.primary-action,
+.nav-link {
+  min-height: 40px;
+}
+.v2-readonly-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #fff4da;
+  color: #765619;
+  font-size: 10px;
+}
+.v2-three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 900px) {
+  .v2-three-columns {
+    grid-template-columns: 1fr;
+  }
+  .v2-branch-bar {
+    justify-content: flex-start;
+  }
+}
+
+/* Manager completion: ready orders stay visible alongside new and preparing. */
+.manager-live-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.manager-live-column.ready {
+  border-top: 2px solid #63c98b;
+}
+.product-actions {
+  align-items: center;
+  min-height: 30px;
+  padding: 0 9px;
+  color: #a9b9af;
+  border: 1px solid #303c35;
+  border-radius: 7px;
+  background: #1c2520;
+  font-size: 9px;
+}
+.product-actions:hover:not(:disabled) {
+  color: var(--green);
+  border-color: #3a6549;
+}
+.product-actions:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.product-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.product-timer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  grid-column: 1 / -1;
+  color: #b7c9bd;
+  font-size: 11px;
+}
+.product-timer-toggle input {
+  accent-color: var(--green);
+}
+.fast-product-label {
+  color: #e4bb6a;
+  font-weight: 600;
+}
+@media (max-width: 1100px) {
+  .manager-live-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .manager-product .product-edit-form {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .manager-product .product-form-actions {
+    grid-column: 1 / -1;
+  }
+}
+.notification-settings {
+  padding: 20px;
+}
+.notification-settings h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.notification-settings p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #63766c;
+}
+.notification-settings form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+}
+.notification-settings label {
+  display: flex;
+  flex: 1;
+  min-width: 210px;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+}
+.notification-settings input {
+  background: white;
+  border: 1px solid #cbd8d0;
+  border-radius: 9px;
+  padding: 11px;
+  font: inherit;
+  direction: ltr;
+}
+.notification-settings .primary-action {
+  width: auto;
+  min-width: 160px;
+}
+
+/* Completed tickets show timestamps, never a growing readiness counter. */
+.completion-stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+  max-width: 100%;
+  color: #8fd6b0;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.completion-stamp > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.completion-stamp strong,
+.completion-stamp b {
+  font-family: inherit;
+  font-size: 12px;
+  direction: rtl;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.completion-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin: 9px 0;
+  color: #a2b8aa;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.app-shell.v2-light .completion-stamp {
+  color: #137348;
+}
+.app-shell.v2-light .completion-details {
+  color: #62756d;
+}
+@media (max-width: 520px) {
+  .station-order-head:has(.completion-stamp) {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+}
+
+/* Human-readable Arabic ticket numbers replace machine-reference styling. */
+.order-code,
+.ticket-code strong,
+.manager-live-order-top strong,
+.history-card-top strong {
+  font-family: inherit;
+  direction: rtl;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.station-order-head > div:first-child {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.archive-order-notes {
+  margin-top: 14px;
+  border-top: 1px solid #79968540;
+  padding-top: 12px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.archive-order-notes h4,
+.archive-original-voice > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.archive-original-note,
+.archive-event-reason,
+.archive-event-detail {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 6px 0;
+}
+.archive-original-note {
+  border-inline-start: 3px solid #cf9b44;
+  border-radius: 8px;
+  background: #b7862610;
+  padding: 10px 12px;
+}
+.archive-empty-note,
+.archive-event-actor {
+  color: #718f7e;
+  font-size: 11px;
+}
+.archive-original-voice {
+  margin: 12px 0;
+}
+.archive-event-history {
+  margin-top: 12px;
+}
+.archive-event-history summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.archive-event-history ol {
+  padding-inline-start: 20px;
+  margin: 0;
+}
+.archive-event-history li {
+  padding: 10px 0;
+  border-top: 1px solid #79968530;
+}
+.archive-event-head,
+.archive-event-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  justify-content: space-between;
+}
+.archive-event-head time,
+.archive-event-dates {
+  color: #789180;
+  font-size: 10px;
+}
+.archive-order-notes audio {
+  max-width: 100%;
+}

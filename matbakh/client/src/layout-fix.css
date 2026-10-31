@@ -1,0 +1,140 @@
+.main-area {
+  box-sizing: border-box;
+  width: calc(100% - 248px);
+  min-width: 0;
+  margin: 0 0 0 248px;
+}
+
+@media (max-width: 1200px) and (min-width: 901px) {
+  .main-area {
+    width: calc(100% - 215px);
+    margin: 0 0 0 215px;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-area {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.station-order-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.station-order-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 11px;
+}
+
+.station-order-tabs button.selected {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.station-order-tabs button span {
+  padding: 2px 6px;
+  color: #c5d2ca;
+  background: #202a26;
+  border-radius: 6px;
+  font: 10px 'IBM Plex Mono', monospace;
+}
+
+.completed-station-order .station-order-foot {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.manager-overdue-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: -8px 0 18px;
+  padding: 13px 15px;
+  color: #ffaaa1;
+  background: #311d1c;
+  border: 1px solid #713b37;
+  border-radius: 11px;
+}
+
+.manager-overdue-alert > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.manager-overdue-alert strong {
+  display: block;
+  font-size: 12px;
+}
+
+.manager-overdue-alert p {
+  margin: 4px 0 0;
+  color: #e0a39d;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.history-order-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.history-late-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  color: #ffaaa1;
+  background: #39211f;
+  border: 1px solid #67403b;
+  border-radius: 20px;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.timer-chip small {
+  color: #86968d;
+  font: 9px 'IBM Plex Sans Arabic', sans-serif;
+  direction: rtl;
+}
+
+.manager-heading-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.manager-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 10px;
+  color: #e7c986;
+  background: #261f15;
+  border: 1px solid #3a3323;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.manager-sound-toggle.enabled {
+  color: #83dfa7;
+  background: #193124;
+  border-color: #2b513a;
+}
