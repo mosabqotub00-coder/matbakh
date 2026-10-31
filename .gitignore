@@ -84,3 +84,11 @@ android-sdk/
 # overlay black-box crash/user-report dumps — session data, never history
 **/.emergent/recordings/
 .mysql-data/ib_logfile0
+
+# Matbakh private data (never push)
+matbakh-private/
+memory/staff-passwords.csv
+.mysql-data/
+.mysql-run/
+matbakh-db/
+matbakh/dist/
