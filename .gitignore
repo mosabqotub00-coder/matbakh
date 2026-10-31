@@ -92,3 +92,9 @@ memory/staff-passwords.csv
 .mysql-run/
 matbakh-db/
 matbakh/dist/
+.env
+.env.*
+*.env
+credentials.json
+*.key
+.credentials
