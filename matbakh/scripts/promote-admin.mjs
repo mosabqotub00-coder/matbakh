@@ -1,5 +1,5 @@
 // Run on the server only: node scripts/promote-admin.mjs <email-or-username>
-// Makes an existing (e.g. just signed-up) account an active system admin.
+// Makes an existing account an active system admin.
 import "dotenv/config";
 import mysql from "mysql2/promise";
 
@@ -17,7 +17,7 @@ try {
   const column = identifier.includes("@") ? "email" : "username";
   const [rows] = await connection.query(`SELECT id, username, email FROM staff_users WHERE ${column} = ? LIMIT 1`, [identifier]);
   if (!rows.length) {
-    console.error("No account with that email or username. Sign up first, then run this again.");
+    console.error("No account with that email or username.");
     process.exit(1);
   }
   await connection.query(

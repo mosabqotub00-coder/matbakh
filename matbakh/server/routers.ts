@@ -24,10 +24,6 @@ import {
   listStaffAccounts,
   authenticateStaff,
   revokeStaffSession,
-  signupStaff,
-  listPendingSignups,
-  approveSignup,
-  rejectSignup,
   setOwnStaffEmail,
   STAFF_SESSION_COOKIE,
   STAFF_SESSION_TTL_MS,
@@ -173,15 +169,6 @@ export const appRouter = router({
       });
       return { success: true } as const;
     }),
-    signup: publicProcedure
-      .input(
-        z.object({
-          displayName: z.string().trim().min(2).max(120),
-          email: emailInput,
-          password: newPasswordInput,
-        })
-      )
-      .mutation(({ ctx, input }) => signupStaff(input, ctx.req.ip || "unknown")),
     setEmail: staffProcedure
       .input(
         z.object({
@@ -278,19 +265,6 @@ export const appRouter = router({
           )
       )
       .mutation(({ ctx, input }) => updateStaffAccount(ctx.staffUser, input)),
-    pendingSignups: systemAdminProcedure.query(() => listPendingSignups()),
-    approveSignup: systemAdminProcedure
-      .input(
-        z.object({
-          id: z.number().int().positive(),
-          usualShift: usualShiftInput.nullable().optional(),
-          ...roleStaffInput.shape,
-        })
-      )
-      .mutation(({ input }) => approveSignup(input)),
-    rejectSignup: systemAdminProcedure
-      .input(z.object({ id: z.number().int().positive() }))
-      .mutation(({ input }) => rejectSignup(input.id)),
   }),
   products: router({
     list: stationProcedure
