@@ -132,7 +132,7 @@ BACKUP_DIR=/var/backups/matbakh pnpm db:backup
 
 ### أول مدير (Admin)
 
-يوجد في البيانات المنقولة حساب `manager` بدور مدير النظام، ومنه تُنشأ بقية الحسابات. لترقية حساب موجود إلى مدير نظام (على الخادم نفسه فقط، لا يمكن ذلك من المتصفح):
+يوجد في البيانات المنقولة حسابا `manager` و`admin` بدور مدير النظام، ومنهما تُنشأ بقية الحسابات. لترقية حساب موجود إلى مدير نظام (على الخادم نفسه فقط، لا يمكن ذلك من المتصفح):
 
 ```bash
 docker compose exec app node scripts/promote-admin.mjs owner@example.com
@@ -145,6 +145,6 @@ pnpm admin:promote owner@example.com
 ### الترقية من نسخة سابقة
 
 ```bash
-docker compose run --rm app pnpm db:migrate   # يضيف عمودي email وapproval_status فقط، بدون حذف بيانات
+docker compose run --rm app pnpm db:migrate   # يضيف أعمدة جديدة فقط، بدون حذف بيانات
 docker compose up -d --build
 ```

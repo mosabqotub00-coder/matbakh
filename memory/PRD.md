@@ -25,6 +25,8 @@ Analyze the uploaded files, run the site, fix any errors, and keep the site exac
 - Cookies are HttpOnly + Secure, SameSite from COOKIE_SAME_SITE (default lax; preview uses none).
 - Verified in a clean-room VPS-style run (fresh copy, empty DB, migrate, bootstrap, signup, promote). Testing agent iteration 2 passed everything.
 
+- 2026-11-01: owner asked to drop self-signup. Removed the signup API/UI and the approvals tab; accounts are created by admins/branch managers as before. Added owner admin account `admin`.
+
 ## Backlog
 - P0: permanent hosting. MATBAKH_DATABASE_URL points at localhost, so it is not an external DB yet. Needs a real cloud MySQL (e.g. TiDB) plus hosting for the Node server. Then rebuild the APK with the permanent URL.
 - P1: push test button in the site UI; Expo receipts cleanup.
