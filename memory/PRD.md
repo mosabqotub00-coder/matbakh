@@ -25,6 +25,12 @@ Analyze the uploaded files, run the site, fix any errors, and keep the site exac
 - Cookies are HttpOnly + Secure, SameSite from COOKIE_SAME_SITE (default lax; preview uses none).
 - Verified in a clean-room VPS-style run (fresh copy, empty DB, migrate, bootstrap, signup, promote). Testing agent iteration 2 passed everything.
 
+- 2026-11-01: owner asked to drop self-signup. Removed the signup API/UI and the approvals tab; accounts are created by admins/branch managers as before. Added owner admin account `admin`.
+
+- 2026-11-01 (b): An order is late as soon as its prep time runs out (no grace wait) — server deadlinePhase, ready/extend everOverdue, client isOverdue. Station archive shows a كان متأخرًا badge. Ready column is now ordered last on mobile. The developer-note button shows its label on mobile. Developer nav shows all pages.
+- New /reports page (system_admin + developer): reports.analytics with filters for period, branch and shift (morning/evening, taken from the creator usualShift or the hour). KPIs, recharts charts, branch/product/order tables, PDF via print, CSV export.
+- APK 1.0.1 (versionCode 2) points to https://www.matbakh.click. Download links are served by FastAPI /api/dl/<name> from /app/downloads (gitignored).
+
 ## Backlog
 - P0: permanent hosting. MATBAKH_DATABASE_URL points at localhost, so it is not an external DB yet. Needs a real cloud MySQL (e.g. TiDB) plus hosting for the Node server. Then rebuild the APK with the permanent URL.
 - P1: push test button in the site UI; Expo receipts cleanup.

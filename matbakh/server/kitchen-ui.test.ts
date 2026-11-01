@@ -29,10 +29,13 @@ const order: KitchenOrder = {
 };
 
 describe("operator deadline and display helpers", () => {
-  it("uses the item grace snapshot instead of the default five", () => {
+  it("uses the item grace snapshot and is late once preparation time runs out", () => {
     expect(graceDueAt(order)).toEqual(new Date("2026-10-27T12:12:00Z"));
-    expect(isOverdue(order, new Date("2026-10-27T12:11:00Z").getTime())).toBe(
+    expect(isOverdue(order, new Date(new Date(order.effectiveDueAt!).getTime() - 1000).getTime())).toBe(
       false
+    );
+    expect(isOverdue(order, new Date("2026-10-27T12:11:00Z").getTime())).toBe(
+      true
     );
     expect(isOverdue(order, new Date("2026-10-27T12:13:00Z").getTime())).toBe(
       true

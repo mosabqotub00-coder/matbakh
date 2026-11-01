@@ -537,13 +537,7 @@ export async function transitionOrder(
               ? order.everOverdue ||
                 Boolean(
                   (order.effectiveDueAt ?? nextDue) &&
-                    isOverdue(
-                      now,
-                      graceDueAt(
-                        (order.effectiveDueAt ?? nextDue)!,
-                        item.graceMinutes
-                      )
-                    )
+                    isOverdue(now, (order.effectiveDueAt ?? nextDue)!)
                 )
               : false,
           };
@@ -783,7 +777,7 @@ export async function extendOrder(
     const newDueAt = addMinutes(previousDueAt, input.minutes);
     const everOverdue =
       order.everOverdue ||
-      isOverdue(new Date(), graceDueAt(previousDueAt, item.graceMinutes));
+      isOverdue(new Date(), previousDueAt);
     await tx
       .update(kitchenOrders)
       .set({

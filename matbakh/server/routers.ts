@@ -47,6 +47,7 @@ import { communicationsRouter } from "./communications";
 import { notificationsRouter } from "./push-router";
 import { nativePushRouter } from "./native-push";
 import { integrationRouter } from "./integration";
+import { operationsAnalytics } from "./reports";
 import { createFeedback, createRelease, developerDashboard, developerOperationsReport, getFeedbackAttachment, inspectRelease, reportDeveloperError, runDeveloperSystemCheck, updateDeveloperIssue, updateDeveloperProfile, updateReleaseStatus, upsertFeatureFlag } from "./developer";
 
 const branchIdInput = z.number().int().positive().optional();
@@ -104,6 +105,21 @@ function readStaffToken(cookieHeader?: string) {
 }
 
 export const appRouter = router({
+  reports: router({
+    analytics: systemAdminProcedure
+      .input(
+        z.object({
+          from: z.string().datetime(),
+          to: z.string().datetime(),
+          branchId: z.number().int().positive().nullable().optional(),
+          shift: z.enum(["morning", "evening"]).nullable().optional(),
+          tzOffsetMinutes: z.number().int().min(-840).max(840),
+        })
+      )
+      .query(({ input }) =>
+        operationsAnalytics({ ...input, from: new Date(input.from), to: new Date(input.to) })
+      ),
+  }),
   developer: router({
     dashboard: developerProcedure.query(({ ctx }) => developerDashboard(ctx.staffUser)),
     operationsReport: developerProcedure.input(z.object({ period: z.enum(["today", "7days", "30days"]).default("today") }).optional()).query(({ ctx, input }) => developerOperationsReport(ctx.staffUser, input?.period ?? "today")),

@@ -1,0 +1,32 @@
+{
+  "summary": "Tested the removal of self-signup and that admins/branch managers still create accounts. Backend: 13/13 pytest pass. Removed procedures (auth.signup, staff.pendingSignups, staff.approveSignup, staff.rejectSignup) return tRPC NOT_FOUND both with and without a session. The owner admin can log in and sees 5 branches. Admin creates station/branch_manager accounts in فرع فيصل; the new account must change its password, logs in with the new one, and cannot log in once deactivated. Duplicate username gets CONFLICT. Branch-manager scope: sees only branch 1, gets FORBIDDEN on branch 2 list/create, on creating branch_manager/system_admin, on moving staff to another branch and on editing another branch's account. Email set → email login → removed → email login fails. Logout makes auth.me null. UI (Playwright 1920x1080): the login page has only the username/password/submit fields (no show-signup, no 'أنشئ حسابًا'). Admin /manager shows الإدارة العامة with tabs الفروع / حسابات الإدارة العليا / مديرو الفروع (no طلبات التسجيل) and 5 branch cards. Selected فرع فيصل, went to the الحسابات tab and created test_station_qa (toast shown, card shows 'التغيير مطلوب عند أول دخول'). Logged in as it, changed the temp password on the forced screen, landed on the station page, logged out. Admin deactivated it through the UI (status موقوف). Admin created test_bm_qa through the UI. The BM changed its password; its branch selector is disabled with only فرع فيصل; role options exclude مدير الفرع/مدير النظام; the hint reads 'فرع الحساب: فرع فيصل'; it created test_bmstation_qa; all listed cards are فيصل. Email UI flow (account-email-input/password/save) worked, including 'إزالة البريد'. All test_%qa% accounts were cleaned from the DB, and the admin email is NULL again.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Toasts (sonner)", "issues": ["Arabic toast text renders with letter-spacing, so the letters show disconnected (e.g. 'ت م إ ن ش ا ء'). Remove letter-spacing for RTL/Arabic text."]},
+      {"screen": "/manager الإدارة العامة → إدارة الفروع list", "issues": ["Branch names in the dark list card are very low contrast (almost invisible on the dark background)."]},
+      {"screen": "/notifications AccountEmailSettings", "issues": ["Removing the email shows the toast 'تم حفظ البريد الإلكتروني.'; it should say the email was removed. After saving, the input clears and the button switches to 'إزالة البريد', so the next submit removes the email, which is easy to do by mistake."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_no_signup_staff_admin.py", "/app/test_reports/pytest/pytest_no_signup.xml"],
+  "action_items": [
+    "Optional polish: remove letter-spacing on Arabic toast text",
+    "Optional polish: improve contrast of branch names in the الإدارة العامة branch-management list",
+    "Optional polish: use a distinct toast when the email is removed",
+    "Note: the review said the UI 'shows a temporary password', but StaffAccountsPanel makes the admin type the temp password (nothing is auto-generated or displayed). This matches the previous behavior; only change it if the owner expects auto-generated passwords."
+  ],
+  "critical_code_review_comments": [
+    "staff.ts still has approvalStatus 'pending' handling (the authenticateStaff FORBIDDEN message, the list/update filters). It is harmless now that no code path creates pending users, but it is dead code that could be removed.",
+    "StaffAccountsPanel form inputs/selects have no data-testid attributes (I used positional selectors). Add data-testids such as staff-form-username, staff-form-role, staff-form-branch, staff-form-submit.",
+    "StaffAccountsPanel.tsx and staff.ts are under 700 lines, which is fine."
+  ],
+  "updated_files": ["/app/backend/tests/test_no_signup_staff_admin.py (new)", "/app/backend/tests/test_standalone_auth.py (removed: obsolete signup/approval tests; its no-manus check moved into the new file)"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin / Admin-4b926aed-5bd39f (system_admin), with its password left unchanged; qa_admin / QaTest-36fb49a9",
+  "seed_data_creation": "Temporary test_station_qa, test_bm_qa and test_bmstation_qa were created and deleted (pytest fixture cleanup). Admin email was set and then removed (NULL).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Self-signup is gone. Regression: pytest /app/backend/tests/test_no_signup_staff_admin.py (auto-cleans test_%qa% users and uses the owner admin account without changing its password). UI: the admin selects a branch via #active-branch, then opens the 'الحسابات' tab in .manager-tabs; the form is form.staff-form-card; the forced password change screen is form.auth-form with 3 password inputs; logout is .logout-button."
+}

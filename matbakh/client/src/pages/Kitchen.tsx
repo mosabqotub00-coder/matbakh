@@ -424,7 +424,7 @@ export default function Kitchen() {
           <BellRing size={18} />
           <div>
             <strong>تنبيه: {lateIds.length} طلب متأخر</strong>
-            <span>تجاوز السماح لا يمسح من السجل حتى بعد التمديد.</span>
+            <span>تجاوز وقت التحضير لا يُمسح من السجل حتى بعد التمديد.</span>
           </div>
         </div>
       )}
@@ -445,7 +445,7 @@ export default function Kitchen() {
           <small>بانتظار التأكيد</small>
         </div>
         <div className="stat-alert">
-          <span>تجاوزت السماح</span>
+          <span>تجاوزت الوقت</span>
           <strong>{lateIds.length}</strong>
           <small>تحتاج متابعة</small>
         </div>

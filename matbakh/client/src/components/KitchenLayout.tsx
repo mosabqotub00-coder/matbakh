@@ -6,6 +6,7 @@ import {
   Flame,
   LayoutDashboard,
   Megaphone,
+  BarChart3,
   Bell,
   Volume2,
   VolumeX,
@@ -28,6 +29,7 @@ const nav = [
   { href: "/manager", label: "لوحة الإدارة", icon: LayoutDashboard },
   { href: "/communications", label: "التواصل", icon: Megaphone },
   { href: "/notifications", label: "مركز التنبيهات", icon: Bell },
+  { href: "/reports", label: "التقارير والتحليلات", icon: BarChart3 },
   { href: "/developer", label: "مركز المطوّر", icon: Code2 },
 ];
 export default function KitchenLayout({ children }: { children: ReactNode }) {
@@ -59,9 +61,7 @@ export default function KitchenLayout({ children }: { children: ReactNode }) {
       ),
   });
   const visibleNav = user
-    ? user.role === "developer"
-      ? nav.filter(item => item.href === "/developer")
-      : nav.filter(item => canOpenPath(user, item.href))
+    ? nav.filter(item => canOpenPath(user, item.href))
     : [];
   const themeClass = location === "/kitchen" ? "v2-dark" : "v2-light";
   function openGeneral() {

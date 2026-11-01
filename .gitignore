@@ -100,3 +100,4 @@ credentials.json
 .credentials
 .mariadb-debs/
 .pnpm-store/
+downloads/

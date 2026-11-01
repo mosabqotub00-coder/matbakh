@@ -25,6 +25,7 @@ import Kitchen from "./pages/Kitchen";
 import Manager from "./pages/Manager";
 import Communications from "./pages/Communications";
 import Notifications from "./pages/Notifications";
+import Reports from "./pages/Reports";
 import Developer from "./pages/Developer";
 import DeveloperReports from "./pages/DeveloperReports";
 import DeveloperIssues from "./pages/DeveloperIssues";
@@ -131,6 +132,7 @@ function Router() {
       "/manager",
       "/communications",
       "/notifications",
+      "/reports",
       "/developer",
       "/developer/reports",
       "/developer/issues",
@@ -145,7 +147,7 @@ function Router() {
       ? "canStation"
       : location === "/kitchen"
         ? "canKitchen"
-              : location === "/manager"
+              : location === "/manager" || location === "/reports"
         ? "canManager"
         : location.startsWith("/developer")
           ? "developer"
@@ -159,6 +161,7 @@ function Router() {
           <Route path="/manager" component={Manager} />
           <Route path="/communications" component={Communications} />
           <Route path="/notifications" component={Notifications} />
+          <Route path="/reports" component={Reports} />
           <Route path="/developer/reports" component={DeveloperReports} />
           <Route path="/developer/issues" component={DeveloperIssues} />
           <Route path="/developer/releases" component={DeveloperReleases} />

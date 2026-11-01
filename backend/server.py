@@ -6,7 +6,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from starlette.background import BackgroundTask
-from starlette.responses import StreamingResponse
+from starlette.responses import FileResponse, JSONResponse, StreamingResponse
 
 load_dotenv(Path(__file__).parent / '.env')
 
@@ -16,6 +16,19 @@ HOP_HEADERS = {"connection", "keep-alive", "transfer-encoding", "te", "trailer",
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 client = httpx.AsyncClient(base_url=UPSTREAM, timeout=httpx.Timeout(120.0, connect=10.0))
+
+
+DOWNLOADS = Path("/app/downloads")
+
+
+@app.get("/api/dl/{name}")
+async def download(name: str):
+    # Unguessable one-off file names only; no directory traversal.
+    target = DOWNLOADS / name
+    if "/" in name or "--" not in name or len(name) < 40 or not target.is_file():
+        return JSONResponse({"error": "not_found"}, status_code=404)
+    base, rest = name.split("--", 1)
+    return FileResponse(target, filename=base + rest[rest.find("."):])
 
 
 @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"])
