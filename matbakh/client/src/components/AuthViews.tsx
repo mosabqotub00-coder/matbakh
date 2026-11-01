@@ -38,6 +38,7 @@ export function canOpenPath(user: StaffClientUser, path: string) {
   if (path === "/kitchen") return hasSectionAccess(user, "canKitchen");
   if (path === "/manager" || path === "/communications") return hasSectionAccess(user, "canManager") || Boolean(user.canBroadcast);
   if (path === "/notifications") return Boolean(user.isActive);
+  if (path === "/reports") return user.role === "system_admin" || user.role === "developer";
   return false;
 }
 function destinationStaffPath(user: StaffClientUser, requestedPath: string) { return canOpenPath(user, requestedPath) ? requestedPath : defaultStaffPath(user); }

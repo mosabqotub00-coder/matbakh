@@ -448,7 +448,7 @@ function BranchManagerDashboard() {
         <section className="manager-overdue-alert" role="alert">
           <BellRing size={19} />
           <div>
-            <strong>{late.length} طلبات تجاوزت السماح</strong>
+            <strong>{late.length} طلبات تجاوزت وقت التحضير</strong>
             <p>{late.map(order => ticketLabel(order)).join("، ")}</p>
           </div>
         </section>

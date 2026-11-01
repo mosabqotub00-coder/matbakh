@@ -132,7 +132,7 @@ export const effectiveRemainingSeconds = (order: KitchenOrder, now: number) => {
   return due ? Math.floor((new Date(due).getTime() - now) / 1000) : 0;
 };
 export const isOverdue = (order: KitchenOrder, now: number) =>
-  order.status === "preparing" && remainingSeconds(order, now) < 0;
+  order.status === "preparing" && Boolean(dueAt(order)) && effectiveRemainingSeconds(order, now) < 0;
 export const deliverySeconds = (order: KitchenOrder): number | null => {
   if (order.status !== "received" || !order.readyAt || !order.receivedAt)
     return null;

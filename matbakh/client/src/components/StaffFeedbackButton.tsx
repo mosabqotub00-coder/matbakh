@@ -24,7 +24,7 @@ export default function StaffFeedbackButton() {
   const utils = trpc.useUtils();
   const submit = trpc.developer.feedbackCreate.useMutation({
     onSuccess: () => {
-      toast.success("تم إرسال الملاحظة إلى مركز المطوّر.");
+      toast.success("تم إرسال ملاحظتك إلى المطوّر بنجاح.");
       void utils.developer.dashboard.invalidate();
       setTitle("");
       setDescription("");
@@ -60,7 +60,7 @@ export default function StaffFeedbackButton() {
   return (
     <>
       <button type="button" className="staff-feedback-trigger" onClick={() => setOpen(true)}>
-        <MessageSquarePlus size={16} /> إرسال ملاحظة
+        <MessageSquarePlus size={16} /> ملاحظة للمطوّر
       </button>
       {open && createPortal(
         <div className="staff-feedback-backdrop" role="presentation" onMouseDown={event => event.target === event.currentTarget && setOpen(false)}>

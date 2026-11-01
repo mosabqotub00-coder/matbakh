@@ -81,7 +81,7 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   owner: process.env.EXPO_OWNER?.trim() || "mosabqotub00",
-  version: "1.0.0",
+  version: "1.0.1",
   extra: {
     ...publicRuntime,
     eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID?.trim() || "b9def632-7624-4d26-b7fe-e0096e3178f2" },
@@ -98,6 +98,7 @@ const config: ExpoConfig = {
       }
   },
   android: {
+    versionCode: 2,
     adaptiveIcon: {
       backgroundColor: "#0D1211",
       foregroundImage: "./assets/images/android-icon-foreground.png",

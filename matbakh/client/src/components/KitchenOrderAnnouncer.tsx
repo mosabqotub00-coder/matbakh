@@ -5,7 +5,7 @@ import { useKitchenAudio } from "@/contexts/KitchenAudioContext";
 import { useBranch } from "@/contexts/BranchContext";
 import {
   clock,
-  remainingSeconds,
+  effectiveRemainingSeconds,
   isOverdue,
   ticketLabel,
   orderAnnouncementText,
@@ -138,11 +138,11 @@ export default function KitchenOrderAnnouncer() {
     );
     late.forEach(order => visualOverdueIds.current.add(order.id));
     if (late.length)
-      toast.warning("تنبيه: طلبات تجاوزت السماح", {
+      toast.warning("تنبيه: طلبات تجاوزت وقت التحضير", {
         description: late
           .map(
             order =>
-              `${ticketLabel(order)} — ${clock(-remainingSeconds(order, now))}`
+              `${ticketLabel(order)} — ${clock(-effectiveRemainingSeconds(order, now))}`
           )
           .join(" | "),
         duration: 5000,

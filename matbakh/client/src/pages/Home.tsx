@@ -65,6 +65,9 @@ function OrderCard({
             {STATUS_LABEL[order.status]}
           </span>
           <strong className="order-code">{ticketLabel(order)}</strong>
+          {completed && order.everOverdue && (
+            <span className="v2-ever-overdue" data-testid={`station-order-overdue-${order.id}`}>كان متأخرًا</span>
+          )}
         </div>
         {completed ? (
           <div className="completion-stamp">

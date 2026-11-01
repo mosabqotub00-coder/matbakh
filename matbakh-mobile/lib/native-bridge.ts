@@ -1,5 +1,5 @@
 // Site address the app opens; override at build time with EXPO_PUBLIC_MATBAKH_URL (HTTPS origin only).
-const DEFAULT_MATBAKH_URL = "https://auto-fix-runner--0u1xa2yt.preview.emergentagent.com";
+const DEFAULT_MATBAKH_URL = "https://www.matbakh.click";
 export const MATBAKH_ORIGIN = new URL(process.env.EXPO_PUBLIC_MATBAKH_URL?.trim() || DEFAULT_MATBAKH_URL).origin;
 export const MATBAKH_HOSTS = new Set([new URL(MATBAKH_ORIGIN).hostname.toLowerCase(), "matbakh.click", "www.matbakh.click"]);
 export const MATBAKH_ORIGIN_WHITELIST = Array.from(MATBAKH_HOSTS, (host) => `https://${host}/*`);

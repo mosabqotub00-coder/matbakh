@@ -483,11 +483,11 @@ export function deadlinePhase(
   dueAt: Date,
   graceMinutes: number
 ): DeadlinePhase | null {
+  // An order is late as soon as its preparation time runs out; grace no longer delays it.
+  void graceMinutes;
   const dueMs = dueAt.getTime();
-  const graceEnd = dueMs + graceMinutes * 60 * 1000;
   const nowMs = now.getTime();
-  if (nowMs >= graceEnd) return "late";
-  if (nowMs >= dueMs) return "grace_entered";
+  if (nowMs >= dueMs) return "late";
   if (nowMs >= dueMs - DEADLINE_NEAR_MS) return "near_due";
   return null;
 }
@@ -548,7 +548,7 @@ export async function processDeadlineNotifications(
       },
       late: {
         title: "تذكرة متأخرة",
-        body: `${label} تجاوزت وقت السماح.`,
+        body: `${label} تجاوزت وقت التحضير المحدد.`,
       },
     };
     await emitNotification({

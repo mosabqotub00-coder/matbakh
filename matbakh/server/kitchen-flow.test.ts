@@ -112,11 +112,11 @@ afterEach(() => {
 });
 
 describe("preparation, grace, extension, and handover", () => {
-  it("does not label readiness during grace as final late", async () => {
+  it("labels readiness after the preparation time as late, even within grace", async () => {
     const db = mockedDatabase();
     await transitionOrder(actor, { orderId: 3, nextStatus: "ready" });
     expect(db.order.status).toBe("ready");
-    expect(db.order.everOverdue).toBe(false);
+    expect(db.order.everOverdue).toBe(true);
     expect(db.locks).toHaveBeenCalledWith("update");
   });
   it("keeps late history when readiness follows grace", async () => {

@@ -31,9 +31,10 @@ describe("notification audience policy", () => {
 
 describe("deadline notification policy", () => {
   const due = new Date("2026-10-27T10:00:00.000Z");
-  it("has distinct near, grace, late, and inactive phases", () => {
+  it("is late as soon as the preparation time runs out", () => {
     expect(deadlinePhase(new Date("2026-10-27T09:59:00.000Z"), due, 5)).toBe("near_due");
-    expect(deadlinePhase(new Date("2026-10-27T10:02:00.000Z"), due, 5)).toBe("grace_entered");
+    expect(deadlinePhase(new Date("2026-10-27T10:00:00.000Z"), due, 5)).toBe("late");
+    expect(deadlinePhase(new Date("2026-10-27T10:02:00.000Z"), due, 5)).toBe("late");
     expect(deadlinePhase(new Date("2026-10-27T10:06:00.000Z"), due, 5)).toBe("late");
     expect(deadlinePhase(new Date("2026-10-27T09:55:00.000Z"), due, 5)).toBe(null);
   });
@@ -46,7 +47,7 @@ describe("deadline notification policy", () => {
   });
 
   it("uses the persisted item grace snapshot rather than a global default", () => {
-    expect(deadlinePhase(new Date("2026-10-27T10:06:00.000Z"), due, 10)).toBe("grace_entered");
+    expect(deadlinePhase(new Date("2026-10-27T10:06:00.000Z"), due, 10)).toBe("late");
     expect(deadlinePhase(new Date("2026-10-27T10:06:00.000Z"), due, 5)).toBe("late");
   });
 });
