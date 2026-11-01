@@ -46,9 +46,11 @@ export const staffUsers = mysqlTable("staff_users", {
   canExtend: boolean("can_extend").default(false).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   mustChangePassword: boolean("must_change_password").default(true).notNull(),
+  email: varchar("email", { length: 320 }),
+  approvalStatus: mysqlEnum("approval_status", ["approved", "pending"]).default("approved").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-}, table => ({ usernameUnique: uniqueIndex("staff_users_username_uq").on(table.username), branchRoleIdx: index("staff_users_branch_role_idx").on(table.branchId, table.role) }));
+}, table => ({ usernameUnique: uniqueIndex("staff_users_username_uq").on(table.username), emailUnique: uniqueIndex("staff_users_email_uq").on(table.email), branchRoleIdx: index("staff_users_branch_role_idx").on(table.branchId, table.role) }));
 
 export const staffSessions = mysqlTable("staff_sessions", {
   id: int("id").autoincrement().primaryKey(),

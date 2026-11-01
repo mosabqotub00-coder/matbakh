@@ -46,7 +46,7 @@ async function main() {
   if (planned.some(item => existingUsers.some(user => user.username === item.username))) throw new Error("A planned username already exists. No existing password will be reset.");
   const file = await open(output, "wx", 0o600);
   const save = async () => {
-    const content = `${JSON.stringify({ generatedAt: new Date().toISOString(), site: "https://matbakh-434fqg4g.manus.space", accounts: planned }, null, 2)}\n`;
+    const content = `${JSON.stringify({ generatedAt: new Date().toISOString(), site: process.env.PUBLIC_SITE_URL ?? "", accounts: planned }, null, 2)}\n`;
     await file.write(content, 0, "utf8");
     await file.truncate(Buffer.byteLength(content));
     await file.sync();

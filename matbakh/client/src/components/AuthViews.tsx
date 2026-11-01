@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KeyRound, LockKeyhole, LogIn, UserRound } from "lucide-react";
+import { KeyRound, LockKeyhole, LogIn, Mail, UserPlus, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ export type StaffRole = "developer" | "system_admin" | "branch_manager" | "kitch
 export type StaffClientUser = {
   id: number; username: string; displayName: string; name?: string; role?: StaffRole | string | null; branchId?: number | null;
   canStation?: boolean; canKitchen?: boolean; canManager?: boolean; canManageUsers?: boolean; canBroadcast?: boolean; canExtend?: boolean;
-  isActive: boolean; mustChangePassword: boolean; email?: null; createdAt: Date;
+  isActive: boolean; mustChangePassword: boolean; email?: string | null; createdAt: Date;
   [key: string]: unknown;
 };
 export type SectionPermission = "canStation" | "canKitchen" | "canManager" | "developer";
@@ -42,18 +42,41 @@ export function canOpenPath(user: StaffClientUser, path: string) {
 }
 function destinationStaffPath(user: StaffClientUser, requestedPath: string) { return canOpenPath(user, requestedPath) ? requestedPath : defaultStaffPath(user); }
 
+function SignupForm({ onDone }: { onDone: () => void }) {
+  const [displayName, setDisplayName] = useState(""); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [confirmation, setConfirmation] = useState("");
+  const signup = trpc.auth.signup.useMutation({ onError: error => toast.error(error.message) });
+  if (signup.isSuccess) return <div className="auth-form" data-testid="signup-submitted"><p className="auth-description">تم استلام طلبك. ستتمكن من الدخول بالبريد وكلمة المرور بعد موافقة الإدارة على حسابك.</p><button type="button" className="auth-submit" data-testid="signup-back-to-login" onClick={onDone}><LogIn size={17} />العودة لتسجيل الدخول</button></div>;
+  return <form className="auth-form" data-testid="signup-form" onSubmit={event => { event.preventDefault(); if (password.length < 10) return toast.error("كلمة المرور يجب أن تحتوي على 10 أحرف على الأقل."); if (password !== confirmation) return toast.error("تأكيد كلمة المرور غير مطابق."); signup.mutate({ displayName: displayName.trim(), email: email.trim(), password }); }}>
+    <label><span>الاسم الكامل</span><div className="auth-input-wrap"><UserRound size={17} /><input data-testid="signup-name-input" autoComplete="name" required minLength={2} maxLength={120} value={displayName} onChange={event => setDisplayName(event.target.value)} placeholder="الاسم كما يظهر للإدارة" /></div></label>
+    <label><span>البريد الإلكتروني</span><div className="auth-input-wrap"><Mail size={17} /><input data-testid="signup-email-input" type="email" dir="ltr" autoComplete="email" required maxLength={320} value={email} onChange={event => setEmail(event.target.value)} placeholder="name@example.com" /></div></label>
+    <label><span>كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input data-testid="signup-password-input" type="password" autoComplete="new-password" required minLength={10} maxLength={128} value={password} onChange={event => setPassword(event.target.value)} /></div></label>
+    <label><span>تأكيد كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input data-testid="signup-confirm-input" type="password" autoComplete="new-password" required minLength={10} maxLength={128} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></div></label>
+    <button type="submit" className="auth-submit" data-testid="signup-submit" disabled={signup.isPending}><UserPlus size={17} />{signup.isPending ? "جارٍ الإرسال…" : "إنشاء حساب"}</button>
+  </form>;
+}
+
 export function LoginScreen({ redirectTo = "/" }: { redirectTo?: string }) {
   const [, setLocation] = useLocation(); const utils = trpc.useUtils(); const queryClient = useQueryClient();
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [username, setUsername] = useState(""); const [password, setPassword] = useState("");
   const login = trpc.auth.login.useMutation({ onError: error => toast.error(error.message) });
   return <main className="auth-screen" dir="rtl"><section className="auth-card">
     <div className="auth-brand"><span className="auth-brand-mark"><LockKeyhole size={22} /></span><div><strong>مطبخي</strong><small>دخول الموظفين</small></div></div>
-    <div className="auth-intro"><span className="eyebrow-line" /><span>نظام تشغيل داخلي متعدد الفروع</span></div><h1>تسجيل الدخول</h1><p className="auth-description">استخدم اسم المستخدم وكلمة المرور للوصول إلى مساحة العمل المصرّح بها.</p>
-    <form className="auth-form" onSubmit={event => { event.preventDefault(); login.mutate({ username: username.trim(), password }, { onSuccess: ({ user }) => { queryClient.removeQueries({ predicate: query => JSON.stringify(query.queryKey[0]) !== '["auth","me"]' }); utils.auth.me.setData(undefined, user); setLocation(user.mustChangePassword ? "/manager" : destinationStaffPath(user, redirectTo)); } }); }}>
-      <label><span>اسم المستخدم</span><div className="auth-input-wrap"><UserRound size={17} /><input autoComplete="username" autoFocus required maxLength={64} value={username} onChange={event => setUsername(event.target.value)} placeholder="اسم المستخدم" /></div></label>
-      <label><span>كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input autoComplete="current-password" type="password" required maxLength={128} value={password} onChange={event => setPassword(event.target.value)} placeholder="كلمة المرور" /></div></label>
-      <button type="submit" className="auth-submit" disabled={login.isPending}><LogIn size={17} />{login.isPending ? "جارٍ التحقق…" : "دخول"}</button>
-    </form><div className="auth-footnote"><span className="live-dot" /> الحسابات وكلمات المرور تُدار من لوحة الإدارة</div>
+    <div className="auth-intro"><span className="eyebrow-line" /><span>نظام تشغيل داخلي متعدد الفروع</span></div>
+    {mode === "login" ? <>
+      <h1>تسجيل الدخول</h1><p className="auth-description">استخدم اسم المستخدم أو البريد الإلكتروني وكلمة المرور للوصول إلى مساحة العمل المصرّح بها.</p>
+      <form className="auth-form" data-testid="login-form" onSubmit={event => { event.preventDefault(); login.mutate({ username: username.trim(), password }, { onSuccess: ({ user }) => { queryClient.removeQueries({ predicate: query => JSON.stringify(query.queryKey[0]) !== '["auth","me"]' }); utils.auth.me.setData(undefined, user); setLocation(user.mustChangePassword ? "/manager" : destinationStaffPath(user, redirectTo)); } }); }}>
+        <label><span>اسم المستخدم أو البريد</span><div className="auth-input-wrap"><UserRound size={17} /><input data-testid="login-username-input" autoComplete="username" autoFocus required maxLength={320} value={username} onChange={event => setUsername(event.target.value)} placeholder="اسم المستخدم أو البريد الإلكتروني" /></div></label>
+        <label><span>كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input data-testid="login-password-input" autoComplete="current-password" type="password" required maxLength={128} value={password} onChange={event => setPassword(event.target.value)} placeholder="كلمة المرور" /></div></label>
+        <button type="submit" className="auth-submit" data-testid="login-submit" disabled={login.isPending}><LogIn size={17} />{login.isPending ? "جارٍ التحقق…" : "دخول"}</button>
+      </form>
+      <button type="button" className="auth-switch" data-testid="show-signup" onClick={() => setMode("signup")}>ليس لديك حساب؟ أنشئ حسابًا بالبريد الإلكتروني</button>
+    </> : <>
+      <h1>إنشاء حساب</h1><p className="auth-description">سيبقى الحساب بانتظار موافقة الإدارة، وهي التي تحدد الدور والفرع.</p>
+      <SignupForm onDone={() => setMode("login")} />
+      <button type="button" className="auth-switch" data-testid="show-login" onClick={() => setMode("login")}>لديك حساب؟ سجّل الدخول</button>
+    </>}
+    <div className="auth-footnote"><span className="live-dot" /> الحسابات والصلاحيات تُدار من لوحة الإدارة</div>
   </section></main>;
 }
 

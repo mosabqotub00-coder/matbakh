@@ -64,6 +64,13 @@
       "when": 1793470000000,
       "tag": "0008_native_push_devices",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1793560000000,
+      "tag": "0009_email_signup",
+      "breakpoints": true
     }
   ]
 }

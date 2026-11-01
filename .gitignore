@@ -99,3 +99,4 @@ credentials.json
 *.key
 .credentials
 .mariadb-debs/
+.pnpm-store/

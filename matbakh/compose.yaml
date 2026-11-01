@@ -28,6 +28,9 @@ services:
       DATABASE_URL: mysql://${MYSQL_USER:-matbakh}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-matbakh}
       MAINTENANCE_TOKEN: ${MAINTENANCE_TOKEN:?Set MAINTENANCE_TOKEN in .env}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      EXPO_ACCESS_TOKEN: ${EXPO_ACCESS_TOKEN:-}
     ports:
       - "127.0.0.1:3000:3000"
     volumes:

@@ -38,7 +38,7 @@ export type StaffSessionUser = Pick<
   | "isActive"
   | "mustChangePassword"
   | "createdAt"
-> & { name: string; email: null };
+> & { name: string; email: string | null };
 
 export type CreateStaffInput = {
   username: string;
@@ -78,6 +78,10 @@ const MAX_STORED_LOGIN_KEYS = 10_000;
 
 function normalizeUsername(username: string) {
   return username.normalize("NFKC").trim().toLocaleLowerCase("en-US");
+}
+
+export function normalizeEmail(email: string) {
+  return email.normalize("NFKC").trim().toLowerCase();
 }
 
 function flagsForRole(role: StaffRole) {
@@ -125,7 +129,7 @@ function safeUser(
     | "isActive"
     | "mustChangePassword"
     | "createdAt"
-  >
+  > & { email?: string | null }
 ): StaffSessionUser {
   const role = roleOf(user) ?? "station";
   const capabilities = flagsForRole(role);
@@ -136,7 +140,7 @@ function safeUser(
     displayName: user.displayName,
     usualShift: user.usualShift ?? null,
     name: user.displayName,
-    email: null,
+    email: user.email ?? null,
     role,
     branchId: user.branchId ?? null,
     canStation: explicitRole
@@ -310,6 +314,7 @@ export async function getStaffSessionContext(
       canExtend: staffUsers.canExtend,
       isActive: staffUsers.isActive,
       mustChangePassword: staffUsers.mustChangePassword,
+      email: staffUsers.email,
       createdAt: staffUsers.createdAt,
     })
     .from(staffSessions)
@@ -318,7 +323,8 @@ export async function getStaffSessionContext(
       and(
         eq(staffSessions.tokenHash, tokenHash),
         gt(staffSessions.expiresAt, new Date()),
-        eq(staffUsers.isActive, true)
+        eq(staffUsers.isActive, true),
+        eq(staffUsers.approvalStatus, "approved")
       )
     )
     .limit(1);
@@ -331,18 +337,26 @@ export async function authenticateStaff(
   remoteAddress: string
 ) {
   const normalized = normalizeUsername(username);
+  const byEmail = normalized.includes("@");
   const key = `${remoteAddress}:${normalized}`;
   enforceLoginLimit(key);
   const db = await requireDb();
   const [user] = await db
     .select()
     .from(staffUsers)
-    .where(eq(staffUsers.username, normalized))
+    .where(byEmail ? eq(staffUsers.email, normalizeEmail(normalized)) : eq(staffUsers.username, normalized))
     .limit(1);
   const passwordMatches = await verifyStaffPassword(
     password,
     user?.passwordHash ?? DUMMY_PASSWORD_HASH
   );
+  if (user && passwordMatches && user.approvalStatus === "pending") {
+    loginFailures.delete(key);
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "حسابك قيد المراجعة. سيتمكن من الدخول بعد موافقة الإدارة.",
+    });
+  }
   if (!user || !user.isActive || !passwordMatches) {
     recordLoginFailure(key);
     throw new TRPCError({
@@ -491,9 +505,11 @@ export async function listStaffAccounts(
       canExtend: staffUsers.canExtend,
       isActive: staffUsers.isActive,
       mustChangePassword: staffUsers.mustChangePassword,
+      email: staffUsers.email,
       createdAt: staffUsers.createdAt,
     })
     .from(staffUsers)
+    .where(eq(staffUsers.approvalStatus, "approved"))
     .orderBy(desc(staffUsers.createdAt), desc(staffUsers.id));
   const visible = filterStaffAccounts(rows, actor, requestedBranchId, scope);
   return {
@@ -583,7 +599,9 @@ export async function updateStaffAccount(
       .from(staffUsers)
       .orderBy(staffUsers.id)
       .for("update");
-    const current = accounts.find(account => account.id === input.id);
+    const current = accounts.find(
+      account => account.id === input.id && account.approvalStatus !== "pending"
+    );
     if (!current)
       throw new TRPCError({ code: "NOT_FOUND", message: "الحساب غير موجود." });
     assertTargetScope(actor, current, input.branchId, input.role);
@@ -704,4 +722,165 @@ export async function bootstrapFirstManager() {
       mustChangePassword: true,
     });
   return { username, temporaryPassword: password };
+}
+
+const signupAttempts = new Map<string, { count: number; windowStartedAt: number }>();
+const MAX_SIGNUPS_PER_WINDOW = 5;
+const SIGNUP_WINDOW_MS = 60 * 60 * 1000;
+
+function enforceSignupLimit(remoteAddress: string) {
+  const now = Date.now();
+  let entry = signupAttempts.get(remoteAddress);
+  if (!entry || now - entry.windowStartedAt > SIGNUP_WINDOW_MS)
+    entry = { count: 0, windowStartedAt: now };
+  entry.count += 1;
+  signupAttempts.set(remoteAddress, entry);
+  if (signupAttempts.size > MAX_STORED_LOGIN_KEYS) {
+    for (const [storedKey, value] of signupAttempts)
+      if (now - value.windowStartedAt > SIGNUP_WINDOW_MS) signupAttempts.delete(storedKey);
+  }
+  if (entry.count > MAX_SIGNUPS_PER_WINDOW)
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: "طلبات تسجيل كثيرة من هذا الجهاز. حاول لاحقًا.",
+    });
+}
+
+function usernameFromEmail(email: string) {
+  const local = normalizeUsername(email.split("@")[0] ?? "")
+    .replace(/[^\p{L}\p{N}._-]/gu, "")
+    .slice(0, 40);
+  return `${local || "user"}_${randomBytes(3).toString("hex")}`;
+}
+
+/** Self-service signup: creates a pending, inactive account. Same answer whether or not the email exists. */
+export async function signupStaff(
+  input: { displayName: string; email: string; password: string },
+  remoteAddress: string
+) {
+  enforceSignupLimit(remoteAddress);
+  const db = await requireDb();
+  const email = normalizeEmail(input.email);
+  const passwordHash = await hashStaffPassword(input.password);
+  const [existing] = await db
+    .select({ id: staffUsers.id })
+    .from(staffUsers)
+    .where(eq(staffUsers.email, email))
+    .limit(1);
+  if (existing) return { submitted: true as const };
+  let username = usernameFromEmail(email);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const [taken] = await db
+      .select({ id: staffUsers.id })
+      .from(staffUsers)
+      .where(eq(staffUsers.username, username))
+      .limit(1);
+    if (!taken) break;
+    username = usernameFromEmail(email);
+  }
+  try {
+    await db.insert(staffUsers).values({
+      username,
+      displayName: input.displayName.trim(),
+      email,
+      passwordHash,
+      role: "station",
+      branchId: null,
+      canStation: false,
+      canKitchen: false,
+      canManager: false,
+      canManageUsers: false,
+      canBroadcast: false,
+      canExtend: false,
+      isActive: false,
+      mustChangePassword: false,
+      approvalStatus: "pending",
+    });
+  } catch (error) {
+    // A concurrent signup for the same email hits the unique index; answer the same way.
+    if ((error as { cause?: { code?: string } })?.cause?.code !== "ER_DUP_ENTRY") throw error;
+  }
+  return { submitted: true as const };
+}
+
+export async function listPendingSignups() {
+  const db = await requireDb();
+  return db
+    .select({
+      id: staffUsers.id,
+      username: staffUsers.username,
+      displayName: staffUsers.displayName,
+      email: staffUsers.email,
+      createdAt: staffUsers.createdAt,
+    })
+    .from(staffUsers)
+    .where(eq(staffUsers.approvalStatus, "pending"))
+    .orderBy(desc(staffUsers.createdAt));
+}
+
+export async function approveSignup(input: {
+  id: number;
+  role: StaffRole;
+  branchId?: number | null;
+  usualShift?: "morning" | "evening" | "flexible" | null;
+}) {
+  const role = input.role;
+  const branchId = isGlobalRole(role) ? null : (input.branchId ?? null);
+  if (!isGlobalRole(role) && branchId == null)
+    throw new TRPCError({ code: "BAD_REQUEST", message: "يجب ربط الحساب بفرع." });
+  if (branchId != null) await getBranch(branchId);
+  const db = await requireDb();
+  const [pending] = await db
+    .select()
+    .from(staffUsers)
+    .where(and(eq(staffUsers.id, input.id), eq(staffUsers.approvalStatus, "pending")))
+    .limit(1);
+  if (!pending)
+    throw new TRPCError({ code: "NOT_FOUND", message: "طلب التسجيل غير موجود." });
+  const update = {
+    role,
+    branchId,
+    usualShift: input.usualShift ?? null,
+    ...flagsForRole(role),
+    isActive: true,
+    approvalStatus: "approved" as const,
+  };
+  await db.update(staffUsers).set(update).where(eq(staffUsers.id, input.id));
+  return safeUser({ ...pending, ...update });
+}
+
+export async function rejectSignup(id: number) {
+  const db = await requireDb();
+  const [pending] = await db
+    .select({ id: staffUsers.id })
+    .from(staffUsers)
+    .where(and(eq(staffUsers.id, id), eq(staffUsers.approvalStatus, "pending")))
+    .limit(1);
+  if (!pending)
+    throw new TRPCError({ code: "NOT_FOUND", message: "طلب التسجيل غير موجود." });
+  await db.delete(staffUsers).where(eq(staffUsers.id, id));
+  return { success: true as const };
+}
+
+export async function setOwnStaffEmail(
+  userId: number,
+  currentPassword: string,
+  email: string | null
+) {
+  const db = await requireDb();
+  const [user] = await db.select().from(staffUsers).where(eq(staffUsers.id, userId)).limit(1);
+  if (!user || !user.isActive || !(await verifyStaffPassword(currentPassword, user.passwordHash)))
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "كلمة المرور الحالية غير صحيحة." });
+  const normalized = email ? normalizeEmail(email) : null;
+  if (normalized) {
+    const [taken] = await db
+      .select({ id: staffUsers.id })
+      .from(staffUsers)
+      .where(and(eq(staffUsers.email, normalized), ne(staffUsers.id, userId)))
+      .limit(1);
+    if (taken)
+      throw new TRPCError({ code: "CONFLICT", message: "هذا البريد مرتبط بحساب آخر." });
+  }
+  await db.update(staffUsers).set({ email: normalized }).where(eq(staffUsers.id, userId));
+  return safeUser({ ...user, email: normalized });
 }

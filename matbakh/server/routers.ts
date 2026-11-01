@@ -24,6 +24,11 @@ import {
   listStaffAccounts,
   authenticateStaff,
   revokeStaffSession,
+  signupStaff,
+  listPendingSignups,
+  approveSignup,
+  rejectSignup,
+  setOwnStaffEmail,
   STAFF_SESSION_COOKIE,
   STAFF_SESSION_TTL_MS,
   updateStaffAccount,
@@ -73,6 +78,11 @@ const newPasswordInput = z
   .string()
   .min(10, "كلمة المرور يجب أن تحتوي على 10 أحرف على الأقل.")
   .max(128);
+const emailInput = z
+  .string()
+  .trim()
+  .max(320)
+  .email("أدخل بريدًا إلكترونيًا صحيحًا.");
 const roleInput = z.enum([
   "developer",
   "system_admin",
@@ -139,7 +149,7 @@ export const appRouter = router({
     login: publicProcedure
       .input(
         z.object({
-          username: z.string().trim().min(1).max(64),
+          username: z.string().trim().min(1).max(320),
           password: z.string().min(1).max(128),
         })
       )
@@ -163,6 +173,25 @@ export const appRouter = router({
       });
       return { success: true } as const;
     }),
+    signup: publicProcedure
+      .input(
+        z.object({
+          displayName: z.string().trim().min(2).max(120),
+          email: emailInput,
+          password: newPasswordInput,
+        })
+      )
+      .mutation(({ ctx, input }) => signupStaff(input, ctx.req.ip || "unknown")),
+    setEmail: staffProcedure
+      .input(
+        z.object({
+          currentPassword: z.string().min(1).max(128),
+          email: emailInput.nullable(),
+        })
+      )
+      .mutation(({ ctx, input }) =>
+        setOwnStaffEmail(ctx.staffUser.id, input.currentPassword, input.email)
+      ),
     changePassword: staffProcedure
       .input(
         z.object({
@@ -249,6 +278,19 @@ export const appRouter = router({
           )
       )
       .mutation(({ ctx, input }) => updateStaffAccount(ctx.staffUser, input)),
+    pendingSignups: systemAdminProcedure.query(() => listPendingSignups()),
+    approveSignup: systemAdminProcedure
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          usualShift: usualShiftInput.nullable().optional(),
+          ...roleStaffInput.shape,
+        })
+      )
+      .mutation(({ input }) => approveSignup(input)),
+    rejectSignup: systemAdminProcedure
+      .input(z.object({ id: z.number().int().positive() }))
+      .mutation(({ input }) => rejectSignup(input.id)),
   }),
   products: router({
     list: stationProcedure

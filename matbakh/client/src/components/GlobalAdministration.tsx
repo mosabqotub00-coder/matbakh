@@ -7,18 +7,20 @@ import {
   Loader2,
   ShieldCheck,
   UserCog,
+  UserPlus,
   Users,
 } from "lucide-react";
 import { Link } from "wouter";
 import { useBranch } from "@/contexts/BranchContext";
 import StaffAccountsPanel from "@/components/StaffAccountsPanel";
+import PendingSignupsPanel from "@/components/PendingSignupsPanel";
 import "@/global-administration.css";
 
 type GlobalAdministrationProps = {
   branchManagement: ReactNode;
 };
 
-type AdministrationTab = "branches" | "system" | "branchManagers";
+type AdministrationTab = "branches" | "system" | "branchManagers" | "signups";
 
 export default function GlobalAdministration({
   branchManagement,
@@ -73,6 +75,16 @@ export default function GlobalAdministration({
         >
           <UserCog size={18} aria-hidden="true" />
           <span>مديرو الفروع</span>
+        </button>
+        <button
+          type="button"
+          data-testid="admin-tab-signups"
+          className={activeTab === "signups" ? "is-active" : ""}
+          aria-selected={activeTab === "signups"}
+          onClick={() => setActiveTab("signups")}
+        >
+          <UserPlus size={18} aria-hidden="true" />
+          <span>طلبات التسجيل</span>
         </button>
       </nav>
 
@@ -170,6 +182,8 @@ export default function GlobalAdministration({
             </div>
             <StaffAccountsPanel scope="system" />
           </section>
+        ) : activeTab === "signups" ? (
+          <PendingSignupsPanel />
         ) : (
           <section className="global-administration__panel">
             <div className="global-administration__section-heading">

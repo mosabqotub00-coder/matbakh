@@ -37,3 +37,5 @@
 .manager-tabs{overflow-x:auto;scrollbar-width:none}.manager-tabs::-webkit-scrollbar{display:none}.manager-tabs button{flex:0 0 auto}
 
 .station-product-filters{display:flex;gap:10px;padding:0 20px 16px;flex-wrap:wrap}.station-product-filters .search-box{flex:1;min-width:180px}.station-product-filters select{background:var(--surface,#171d24);border:1px solid var(--border,#303843);border-radius:10px;color:var(--text,#e5e7eb);padding:10px 12px;font:inherit;max-width:100%}.quantity-stepper button:disabled{opacity:.4;cursor:not-allowed}
+.auth-switch{display:block;width:100%;margin-top:14px;padding:8px;border:0;background:transparent;color:#82dca7;font:inherit;font-size:11px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}.auth-switch:hover{color:#a8f0c4}
+.staff-role-list select{height:32px;padding:0 8px;border:1px solid #2e4739;border-radius:7px;background:#0d1311;color:#cfe0d5;font:inherit;font-size:11px}

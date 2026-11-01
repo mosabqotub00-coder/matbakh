@@ -24,7 +24,7 @@ function userFor(section: "canStation" | "canKitchen" | "canManager"): StaffSess
 function callerFor(staffUser: StaffSessionUser | null) {
   const context: TrpcContext = {
     req: { headers: {} } as TrpcContext["req"], res: {} as TrpcContext["res"],
-    user: null, staffUser, staffSessionHash: "session-hash",
+    staffUser, staffSessionHash: "session-hash",
   };
   return appRouter.createCaller(context);
 }

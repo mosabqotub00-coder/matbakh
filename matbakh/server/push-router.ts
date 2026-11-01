@@ -1,11 +1,7 @@
-import type { Express, Request, Response } from "express";
-import { jwtVerify } from "jose";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { ENV } from "./_core/env";
 import { router, staffProcedure } from "./_core/trpc";
 import {
-  configuredDeadlineTaskUid,
   configurePushSettings,
   getPushStatus,
   listNotificationsForUser,
@@ -92,73 +88,3 @@ export const notificationsRouter = router({
       return configurePushSettings(input);
     }),
 });
-
-function cookieValue(req: Request, name: string) {
-  const prefix = `${name}=`;
-  return (req.headers.cookie ?? "")
-    .split(";")
-    .map(part => part.trim())
-    .find(part => part.startsWith(prefix))
-    ?.slice(prefix.length);
-}
-
-async function verifyPlatformSchedule(req: Request) {
-  const token = cookieValue(req, "app_session_id");
-  if (!token || !ENV.cookieSecret || !ENV.appId || !ENV.oAuthServerUrl)
-    return null;
-  try {
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(ENV.cookieSecret),
-      { algorithms: ["HS256"] }
-    );
-    if (
-      payload.appId !== ENV.appId ||
-      typeof payload.openId !== "string" ||
-      !payload.openId.startsWith("cron_")
-    )
-      return null;
-    const response = await fetch(
-      `${ENV.oAuthServerUrl.replace(/\/$/, "")}/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jwt_token: token, project_id: ENV.appId }),
-      }
-    );
-    if (!response.ok) return null;
-    const identity = (await response.json()) as {
-      openId?: string;
-      projectId?: string;
-      taskUid?: string;
-    };
-    if (identity.projectId && identity.projectId !== ENV.appId) return null;
-    if (identity.openId && identity.openId !== payload.openId) return null;
-    if (!identity.taskUid) return null;
-    const configuredTaskUid = await configuredDeadlineTaskUid();
-    if (!configuredTaskUid || configuredTaskUid !== identity.taskUid)
-      return null;
-    return identity;
-  } catch {
-    return null;
-  }
-}
-
-/** Parent registers this function from the server entrypoint after body parsing. */
-export function registerNotificationRoutes(app: Express) {
-  app.post("/api/scheduled/deadlines", async (req: Request, res: Response) => {
-    const identity = await verifyPlatformSchedule(req);
-    if (!identity) {
-      res.status(401).json({ error: "unauthorized" });
-      return;
-    }
-    try {
-      const result = await processDeadlineNotifications();
-      res.status(200).json({ ok: true, taskUid: identity.taskUid, ...result });
-    } catch {
-      res.status(503).json({ error: "deadline_processing_unavailable" });
-    }
-  });
-}
-
-export { verifyPlatformSchedule };
