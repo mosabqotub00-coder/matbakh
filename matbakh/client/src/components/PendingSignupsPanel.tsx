@@ -19,10 +19,10 @@ function SignupRow({ signup }: { signup: Signup }) {
   const reject = trpc.staff.rejectSignup.useMutation({ onSuccess: () => { toast.success("تم رفض الطلب."); refresh(); }, onError: error => toast.error(error.message) });
   const global = role === "system_admin";
   return (
-    <article className="staff-account-card" data-testid={`pending-signup-${signup.id}`}>
+    <article className="staff-account-card signup-card" data-testid={`pending-signup-${signup.id}`}>
       <div className="staff-account-identity">
         <span className="staff-avatar">{signup.displayName.slice(0, 1)}</span>
-        <div><strong>{signup.displayName}</strong><small dir="ltr">{signup.email}</small></div>
+        <div><strong>{signup.displayName}</strong><small dir="ltr">{signup.email} · @{signup.username}</small></div>
         <span className="product-state off">بانتظار الموافقة</span>
       </div>
       <div className="staff-role-list">

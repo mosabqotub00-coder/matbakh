@@ -15,7 +15,7 @@ export default function AccountEmailSettings() {
     onError: error => toast.error(error.message),
   });
   return (
-    <section className="manager-section" data-testid="account-email-settings" dir="rtl">
+    <section className="manager-section account-email-card" data-testid="account-email-settings" dir="rtl">
       <div className="manager-section-head"><div><h2><Mail size={18} /> البريد الإلكتروني للحساب (اختياري)</h2>
         <p className="staff-hint">{current ? <>البريد الحالي: <bdi dir="ltr" data-testid="account-email-current">{current}</bdi>. يمكنك الدخول به بدل اسم المستخدم.</> : "اربط بريدًا لتتمكن من الدخول به بدل اسم المستخدم."}</p></div></div>
       <form className="auth-form" onSubmit={event => { event.preventDefault(); save.mutate({ email: email.trim() || null, currentPassword: password }); }}>

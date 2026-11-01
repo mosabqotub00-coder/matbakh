@@ -1,0 +1,36 @@
+{
+  "summary": "Tested standalone auth (Manus removed) on Matbakh, through the API (pytest, tRPC batch) and the UI (Playwright). Every requested feature works: qa_admin username login lands on /manager and sees all 5 branches. Signup shows a client-side error when the passwords don't match; passwords under 10 chars are blocked by the browser's own minLength check. A duplicate signup returns the same answer and creates only one pending row. A pending user gets the 'قيد المراجعة' message and a wrong password gets the generic message. In the admin signups tab, approve stays disabled until a branch is chosen, approving as branch_manager of فرع فيصل works, and reject goes through the confirm dialog and deletes the row. The approved user can log in by email and by generated username, sees only فرع فيصل, and gets FORBIDDEN on staff.list for branch 2 and on pendingSignups/approveSignup. Logout makes auth.me return null. The cookie is HttpOnly and Secure. setEmail works in the UI and the API (wrong password rejected, CONFLICT on a taken email, email login works afterwards). Unauthenticated staff.list and staff.pendingSignups return UNAUTHORIZED. No Manus routes, scripts or config remain. pnpm test passes (104). Used 3 signups. All test data was deleted and qa_admin's email was reset to NULL.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/oauth/callback, /api/platform/config.js (any unknown /api/*)", "issue": "Returns 200 with the SPA HTML instead of a 404 JSON. This is allowed by the request, but unknown /api routes should return 404."},
+      {"endpoint": "auth.setEmail", "issue": "The currentPassword check has no rate limit, so a stolen session could be used to brute-force the password. Email is also not verified, so a user can claim someone else's address before that person signs up (squatting)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/manager → طلبات التسجيل (PendingSignupsPanel)", "issues": ["The applicant's display name inside the dark .staff-account-card is almost invisible (dark text on a dark background).", "The 'موافقة' approve button looks low-contrast or disabled even when it is enabled.", "The generated username is not shown in the card; showing it would help admins."]},
+      {"screen": "/notifications → إعدادات الهاتف (AccountEmailSettings)", "issues": ["The heading 'البريد الإلكتروني للحساب (اختياري)' and the hint text are nearly invisible on the dark manager-section card."]},
+      {"screen": "/manager الفروع tab", "issues": ["This looks pre-existing: in the dark 'إدارة الفروع' list card, branch names and headings have very low contrast."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_standalone_auth.py", "/app/test_reports/pytest/pytest_auth.xml"],
+  "action_items": [
+    "Fix the text contrast in the PendingSignupsPanel cards (name and approve button) and in the AccountEmailSettings heading. Both are dark text on the dark card background.",
+    "Optional: return 404 JSON for unknown /api/* routes.",
+    "Optional: rate-limit failed currentPassword attempts on auth.setEmail."
+  ],
+  "critical_code_review_comments": [
+    "staff.ts is 886 lines; consider splitting the signup/approval code into its own module.",
+    "signupStaff hashes the password before checking whether the email exists, which keeps timing uniform. Good, keep it that way.",
+    "The signup limiter counts duplicate-email submissions too (fine). Limits are in-memory, so they reset on restart and are not shared across replicas."
+  ],
+  "updated_files": ["/app/backend/tests/test_standalone_auth.py"],
+  "success_rate": {"backend": "100% (the 3 failures in the first run were test bugs, since staff.list returns {users,total,activeCount}; fixed and re-verified)", "frontend": "100% functional"},
+  "seed_data_creation": "Created 3 signups (1 via API, 2 via UI): qa.*+test@example.com. All were deleted. qa_admin email reset to NULL.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Each full run of test_standalone_auth.py creates 1 signup and approves it. Clean up afterwards with: DELETE FROM staff_users WHERE email LIKE '%test%' (also delete their staff_sessions). The signup limit is 5/hour per IP. staff.list returns {users,total,activeCount}. The فرع فيصل branch has a leftover open order 'صنف_TEST' from earlier testing."
+}

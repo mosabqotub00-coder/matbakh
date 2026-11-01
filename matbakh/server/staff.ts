@@ -867,10 +867,15 @@ export async function setOwnStaffEmail(
   currentPassword: string,
   email: string | null
 ) {
+  const limitKey = `set-email:${userId}`;
+  enforceLoginLimit(limitKey);
   const db = await requireDb();
   const [user] = await db.select().from(staffUsers).where(eq(staffUsers.id, userId)).limit(1);
-  if (!user || !user.isActive || !(await verifyStaffPassword(currentPassword, user.passwordHash)))
+  if (!user || !user.isActive || !(await verifyStaffPassword(currentPassword, user.passwordHash))) {
+    recordLoginFailure(limitKey);
     throw new TRPCError({ code: "UNAUTHORIZED", message: "كلمة المرور الحالية غير صحيحة." });
+  }
+  loginFailures.delete(limitKey);
   const normalized = email ? normalizeEmail(email) : null;
   if (normalized) {
     const [taken] = await db
