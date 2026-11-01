@@ -25,6 +25,7 @@ import {
   type NotificationPeriod,
 } from "../../../shared/notification-feed";
 import NotificationDeviceSettings from "@/components/NotificationDeviceSettings";
+import AccountEmailSettings from "@/components/AccountEmailSettings";
 import "@/notification-center.css";
 
 type CenterTab = "new" | "archive" | "device";
@@ -208,6 +209,7 @@ export default function Notifications() {
           aria-labelledby="notification-tab-device"
         >
           <NotificationDeviceSettings />
+          <AccountEmailSettings />
         </div>
       ) : (
         <div

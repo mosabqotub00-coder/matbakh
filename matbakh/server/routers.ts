@@ -24,6 +24,7 @@ import {
   listStaffAccounts,
   authenticateStaff,
   revokeStaffSession,
+  setOwnStaffEmail,
   STAFF_SESSION_COOKIE,
   STAFF_SESSION_TTL_MS,
   updateStaffAccount,
@@ -73,6 +74,11 @@ const newPasswordInput = z
   .string()
   .min(10, "كلمة المرور يجب أن تحتوي على 10 أحرف على الأقل.")
   .max(128);
+const emailInput = z
+  .string()
+  .trim()
+  .max(320)
+  .email("أدخل بريدًا إلكترونيًا صحيحًا.");
 const roleInput = z.enum([
   "developer",
   "system_admin",
@@ -139,7 +145,7 @@ export const appRouter = router({
     login: publicProcedure
       .input(
         z.object({
-          username: z.string().trim().min(1).max(64),
+          username: z.string().trim().min(1).max(320),
           password: z.string().min(1).max(128),
         })
       )
@@ -163,6 +169,16 @@ export const appRouter = router({
       });
       return { success: true } as const;
     }),
+    setEmail: staffProcedure
+      .input(
+        z.object({
+          currentPassword: z.string().min(1).max(128),
+          email: emailInput.nullable(),
+        })
+      )
+      .mutation(({ ctx, input }) =>
+        setOwnStaffEmail(ctx.staffUser.id, input.currentPassword, input.email)
+      ),
     changePassword: staffProcedure
       .input(
         z.object({

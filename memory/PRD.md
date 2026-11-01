@@ -17,6 +17,14 @@ Analyze the uploaded files, run the site, fix any errors, and keep the site exac
 - Mobile: configurable site URL (EXPO_PUBLIC_MATBAKH_URL), fixed pnpm hoisting (.npmrc node-linker=hoisted, react-native-css-interop), and built the APK (preview profile).
 - APK: https://expo.dev/artifacts/eas/WWVGPk_RNmh-8NSMNqHAOpnJjsKcSghJdiZFMJJkny8.apk
 
+## 2026-11-01 — Standalone auth (Manus OAuth removed)
+- Removed Manus OAuth/SDK/forge modules, /api/oauth/callback, /api/platform/config.js, Manus vite plugins, the jose dependency, and the Manus `users` login path. Unknown /api/* now returns 404 JSON.
+- staff_users gains `email` (nullable unique) and `approval_status` (approved|pending), added by migration 0009. Existing 38 accounts stay approved and unchanged.
+- Login accepts a username or an email. Email signup creates a pending account; a system admin approves it (role + branch) or rejects it in الإدارة العامة → طلبات التسجيل.
+- Staff can link an optional email (with their current password) on /notifications. First admin: `node scripts/promote-admin.mjs <email>` on the server.
+- Cookies are HttpOnly + Secure, SameSite from COOKIE_SAME_SITE (default lax; preview uses none).
+- Verified in a clean-room VPS-style run (fresh copy, empty DB, migrate, bootstrap, signup, promote). Testing agent iteration 2 passed everything.
+
 ## Backlog
 - P0: permanent hosting. MATBAKH_DATABASE_URL points at localhost, so it is not an external DB yet. Needs a real cloud MySQL (e.g. TiDB) plus hosting for the Node server. Then rebuild the APK with the permanent URL.
 - P1: push test button in the site UI; Expo receipts cleanup.

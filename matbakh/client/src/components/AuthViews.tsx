@@ -9,7 +9,7 @@ export type StaffRole = "developer" | "system_admin" | "branch_manager" | "kitch
 export type StaffClientUser = {
   id: number; username: string; displayName: string; name?: string; role?: StaffRole | string | null; branchId?: number | null;
   canStation?: boolean; canKitchen?: boolean; canManager?: boolean; canManageUsers?: boolean; canBroadcast?: boolean; canExtend?: boolean;
-  isActive: boolean; mustChangePassword: boolean; email?: null; createdAt: Date;
+  isActive: boolean; mustChangePassword: boolean; email?: string | null; createdAt: Date;
   [key: string]: unknown;
 };
 export type SectionPermission = "canStation" | "canKitchen" | "canManager" | "developer";
@@ -48,12 +48,14 @@ export function LoginScreen({ redirectTo = "/" }: { redirectTo?: string }) {
   const login = trpc.auth.login.useMutation({ onError: error => toast.error(error.message) });
   return <main className="auth-screen" dir="rtl"><section className="auth-card">
     <div className="auth-brand"><span className="auth-brand-mark"><LockKeyhole size={22} /></span><div><strong>مطبخي</strong><small>دخول الموظفين</small></div></div>
-    <div className="auth-intro"><span className="eyebrow-line" /><span>نظام تشغيل داخلي متعدد الفروع</span></div><h1>تسجيل الدخول</h1><p className="auth-description">استخدم اسم المستخدم وكلمة المرور للوصول إلى مساحة العمل المصرّح بها.</p>
-    <form className="auth-form" onSubmit={event => { event.preventDefault(); login.mutate({ username: username.trim(), password }, { onSuccess: ({ user }) => { queryClient.removeQueries({ predicate: query => JSON.stringify(query.queryKey[0]) !== '["auth","me"]' }); utils.auth.me.setData(undefined, user); setLocation(user.mustChangePassword ? "/manager" : destinationStaffPath(user, redirectTo)); } }); }}>
-      <label><span>اسم المستخدم</span><div className="auth-input-wrap"><UserRound size={17} /><input autoComplete="username" autoFocus required maxLength={64} value={username} onChange={event => setUsername(event.target.value)} placeholder="اسم المستخدم" /></div></label>
-      <label><span>كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input autoComplete="current-password" type="password" required maxLength={128} value={password} onChange={event => setPassword(event.target.value)} placeholder="كلمة المرور" /></div></label>
-      <button type="submit" className="auth-submit" disabled={login.isPending}><LogIn size={17} />{login.isPending ? "جارٍ التحقق…" : "دخول"}</button>
-    </form><div className="auth-footnote"><span className="live-dot" /> الحسابات وكلمات المرور تُدار من لوحة الإدارة</div>
+    <div className="auth-intro"><span className="eyebrow-line" /><span>نظام تشغيل داخلي متعدد الفروع</span></div>
+      <h1>تسجيل الدخول</h1><p className="auth-description">استخدم اسم المستخدم أو البريد الإلكتروني وكلمة المرور للوصول إلى مساحة العمل المصرّح بها.</p>
+      <form className="auth-form" data-testid="login-form" onSubmit={event => { event.preventDefault(); login.mutate({ username: username.trim(), password }, { onSuccess: ({ user }) => { queryClient.removeQueries({ predicate: query => JSON.stringify(query.queryKey[0]) !== '["auth","me"]' }); utils.auth.me.setData(undefined, user); setLocation(user.mustChangePassword ? "/manager" : destinationStaffPath(user, redirectTo)); } }); }}>
+        <label><span>اسم المستخدم أو البريد</span><div className="auth-input-wrap"><UserRound size={17} /><input data-testid="login-username-input" autoComplete="username" autoFocus required maxLength={320} value={username} onChange={event => setUsername(event.target.value)} placeholder="اسم المستخدم أو البريد الإلكتروني" /></div></label>
+        <label><span>كلمة المرور</span><div className="auth-input-wrap"><KeyRound size={17} /><input data-testid="login-password-input" autoComplete="current-password" type="password" required maxLength={128} value={password} onChange={event => setPassword(event.target.value)} placeholder="كلمة المرور" /></div></label>
+        <button type="submit" className="auth-submit" data-testid="login-submit" disabled={login.isPending}><LogIn size={17} />{login.isPending ? "جارٍ التحقق…" : "دخول"}</button>
+      </form>
+    <div className="auth-footnote"><span className="live-dot" /> الحسابات والصلاحيات تُدار من لوحة الإدارة</div>
   </section></main>;
 }
 

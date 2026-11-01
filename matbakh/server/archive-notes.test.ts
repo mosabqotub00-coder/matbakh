@@ -165,7 +165,6 @@ function callerFor(staffUserValue: StaffSessionUser | null) {
   const context: TrpcContext = {
     req: { headers: {} } as TrpcContext["req"],
     res: {} as TrpcContext["res"],
-    user: null,
     staffUser: staffUserValue,
     staffSessionHash: "test-session-hash",
   };
